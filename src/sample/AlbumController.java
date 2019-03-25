@@ -34,6 +34,7 @@ public class AlbumController {
 
     private Scene trackScene;
     private AutoPlayer player;
+    private TrackController trackController;
 
     @FXML
     ListView<Album> albumListView;
@@ -66,6 +67,10 @@ public class AlbumController {
 public void initialize() {
     }
 
+    public void setTrackController(TrackController trackController) {
+        this.trackController = trackController;
+    }
+
     public void setScene(Scene trackScene) {
         this.trackScene = trackScene;
     }
@@ -76,6 +81,31 @@ public void initialize() {
         primaryStage.setScene(trackScene);
     }
 
+    //track view with all loaded tracks
+    @FXML
+    public void goToAllTracks() {
+        trackController.setViewTracks(DataStore.getInstance().getTracks());
+        Stage primaryStage = (Stage)((Node)mainPane).getScene().getWindow();
+        primaryStage.setScene(trackScene);
+    }
+
+    //trackview with that album's tracks
+    @FXML
+    public void openAlbum(Album album) {
+        trackController.setViewTracks(album.getTrackList());
+        Stage primaryStage = (Stage)((Node)mainPane).getScene().getWindow();
+        primaryStage.setScene(trackScene);
+    }
+
+    @FXML
+    public void openAlbum() {
+        Album album = albumListView.getSelectionModel().getSelectedItem();
+        trackController.setViewTracks(album.getTrackList());
+        Stage primaryStage = (Stage)((Node)mainPane).getScene().getWindow();
+        primaryStage.setScene(trackScene);
+    }
+
+
     public void setUpAlbumView() {
         albumListContextMenu = new ContextMenu();
         MenuItem albumMenuItem = new MenuItem("Go To Album");
@@ -83,11 +113,12 @@ public void initialize() {
             @Override
             public void handle(ActionEvent event) {
                 Album album = albumListView.getSelectionModel().getSelectedItem();
-//                try {
-//                } catch (Exception e) {
-//                    System.out.println("cant play that sonny");
-//                    e.printStackTrace();
-//                }
+                try {
+                   openAlbum(album);
+                } catch (Exception e) {
+                    System.out.println("cant play that sonny");
+                    e.printStackTrace();
+                }
             }
         });
         albumListContextMenu.getItems().addAll(albumMenuItem);
@@ -149,18 +180,18 @@ public void initialize() {
     }
 
     @FXML
-    public void testLoad() {
+    public void loadAlbum() {
         DirectoryChooser chooser = new DirectoryChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("wav files", "*.wav");
         chooser.setInitialDirectory(new File("./"));
         File file = chooser.showDialog(mainPane.getScene().getWindow());
         System.out.println(file.canRead());
-
-
+        String[] albumDetails = file.toString().split("-");
+        Album newAlbum = new Album(albumDetails[0], albumDetails[1]);
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(file.toPath())) {
             for (Path streamPath : stream) {
                 String[] details = streamPath.toString().split("-");
-                String trackName = details[3];
+                String trackName = details[4];
                 Duration duration = new Duration();
                 AudioFormat format;
                 try (AudioInputStream streaminput = AudioSystem.getAudioInputStream(streamPath.toFile())) {
@@ -170,12 +201,15 @@ public void initialize() {
                     float frameRate = format.getFrameRate();
                     float totalLength = (size / (frameSize * frameRate));
                     duration = new Duration((int) totalLength);
-                    DataStore.getInstance().addTrack(new Track(trackName, duration, streamPath.toFile()));
+                    Track newTrack = new Track(trackName, duration, streamPath.toFile());
+                    newAlbum.addToAlbum(newTrack);
+                    DataStore.getInstance().addTrack(newTrack);
                     for (String detail : details) {
                         System.out.println("\t" + detail);
                     }
                 }
             }
+            DataStore.getInstance().addAlbum(newAlbum);
         } catch(Exception e){
             e.printStackTrace();
         }

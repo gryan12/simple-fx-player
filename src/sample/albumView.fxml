@@ -16,8 +16,8 @@
                   <Label text="views" />
                   <Button mnemonicParsing="false" text="Playlists" />
                   <Button mnemonicParsing="false" text="Albums"/>
-                  <Button mnemonicParsing="false" text="All Tracks" onAction="#openTrackScene"/>
-                  <Button mnemonicParsing="false" text="Button" />
+                  <Button mnemonicParsing="false" text="All Tracks" onAction="#goToAllTracks"/>
+                  <Button mnemonicParsing="false" text="Go To Album" onAction="#openAlbum"/>
                   <Button mnemonicParsing="false" text="Button" />
                   <!--<Button onAction="#textPrev" text="test prev" />-->
                </children>
@@ -61,7 +61,7 @@
                      <items>
                         <MenuItem mnemonicParsing="false" text="Load Track" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Load Album" />
+                        <MenuItem mnemonicParsing="false" text="Load Album" onAction="#loadAlbum" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" text="Create Playlist" />
                      </items>

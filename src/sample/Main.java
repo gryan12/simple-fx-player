@@ -35,6 +35,8 @@ public class Main extends Application {
         albumController.setScene(trackScene);
         albumController.setUpAlbumView();
         albumController.setPlayer(trackController.getPlayer());
+        albumController.setTrackController(trackController);
+        trackController.setAlbumController(albumController);
 
         primaryStage.setTitle("All Tracks");
         primaryStage.setScene(trackScene);

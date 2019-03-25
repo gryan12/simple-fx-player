@@ -40,6 +40,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class TrackController {
@@ -47,9 +48,8 @@ public class TrackController {
     public Track currentSong;
     public File currentFile;
     public static Thread musicPlayerThread;
-
     private AutoPlayer player = new AutoPlayer();
-
+    private AlbumController albumController;
 
     private Scene albumScene;
 
@@ -109,6 +109,15 @@ public class TrackController {
 
     public Scene getAlbumScene() {
         return albumScene;
+    }
+
+
+    public void setViewTracks(List<Track> trackList) {
+        trackListView.getItems().setAll(trackList);
+    }
+
+    public void setAlbumController(AlbumController albumController) {
+        this.albumController = albumController;
     }
 
     public void setUpListView() {
@@ -190,6 +199,10 @@ public class TrackController {
        primaryStage.setScene(albumScene);
     }
 
+
+    public void openAllTracks() {
+        setViewTracks(DataStore.getInstance().getTracks());
+    }
 
     @FXML
     public void loadAlbum() {
