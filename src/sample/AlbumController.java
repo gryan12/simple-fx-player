@@ -197,4 +197,11 @@ public void initialize() {
         }
     }
 
+    public AutoPlayer getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(AutoPlayer player) {
+        this.player = player;
+    }
 }

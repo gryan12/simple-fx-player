@@ -38,10 +38,10 @@
          <children>
             <HBox fx:id="controllBox" alignment="CENTER" prefHeight="59.0" prefWidth="600.0">
                <children>
-                  <!--<Button fx:id="prev" mnemonicParsing="false" onAction="#testPrev" text="Previous" />-->
-                  <!--<Button fx:id="play" mnemonicParsing="false" onAction="#handleTestPlay" text="Play" />-->
-                  <!--<Button fx:id="pause" mnemonicParsing="false" onAction="#testPause" text="Pause" />-->
-                  <!--<Button fx:id="next" mnemonicParsing="false" onAction="#testNext" text="Next" />-->
+                  <Button fx:id="prev" mnemonicParsing="false" onAction="#handlePlayerControlls" text="Previous" />
+                  <Button fx:id="play" mnemonicParsing="false" onAction="#handlePlayerControlls" text="Play" />
+                  <Button fx:id="pause" mnemonicParsing="false" onAction="#handlePlayerControlls" text="Pause" />
+                  <Button fx:id="next" mnemonicParsing="false" onAction="#handlePlayerControlls" text="Next" />
                </children>
             </HBox>
             <HBox fx:id="sliderBox" alignment="CENTER" prefHeight="100.0" prefWidth="200.0">

@@ -47,6 +47,7 @@ public class TrackController {
     public Track currentSong;
     public File currentFile;
     public static Thread musicPlayerThread;
+
     private AutoPlayer player = new AutoPlayer();
 
 
@@ -102,6 +103,9 @@ public class TrackController {
     public void initialize() {
     }
 
+    public AutoPlayer getPlayer() {
+        return player;
+    }
 
     public Scene getAlbumScene() {
         return albumScene;
