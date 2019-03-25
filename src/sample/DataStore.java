@@ -73,43 +73,87 @@ public class DataStore {
    }
 
 
-   public void storeData() {
-
-        try(ObjectOutputStream output = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("tracks.dat")))) {
-            for (Track track: trackList) {
-                output.writeObject(track);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-   }
-   public void loadData() {
-
-        try (ObjectInputStream input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("tracks.dat")))) {
-            boolean eof = false;
-            while (!eof) {
-                try {
-                    Track track = (Track) input.readObject();
-                    System.out.println("Track: " + track.getTitle() + " : " + track.getDuration().toString());
-                    trackList.add(track);
-                } catch (EOFException e) {
-                    eof = true;
-                }
-            }
-       } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+   public void storeAlbumsInFile() {
+       try(ObjectOutputStream output = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("albums.dat")))) {
+           for (Album album: albumList) {
+               output.writeObject(album);
+           }
+       } catch (IOException e) {
+           e.printStackTrace();
        }
    }
 
+  public void storeTracksInFile() {
+      try(ObjectOutputStream output = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("tracks.dat")))) {
+          for (Track track: trackList) {
+              output.writeObject(track);
+          }
+      } catch (IOException e) {
+          e.printStackTrace();
+      }
+  }
+
+  public void loadTracks() {
+      try (ObjectInputStream input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("tracks.dat")))) {
+          boolean eof = false;
+          while (!eof) {
+              try {
+                  Track track = (Track) input.readObject();
+                  System.out.println("Track: " + track.getTitle() + " : " + track.getDuration().toString());
+                  trackList.add(track);
+              } catch (EOFException e) {
+                  eof = true;
+              }
+          }
+      } catch (IOException | ClassNotFoundException e) {
+          e.printStackTrace();
+      }
+  }
+  public void loadAlbums() {
+      try (ObjectInputStream input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("albums.dat")))) {
+          boolean eof = false;
+          while (!eof) {
+              try {
+                  Album album = (Album) input.readObject();
+                  System.out.println("Album: " + album.getName() + " : " + album.getArtist());
+                  albumList.add(album);
+              } catch (EOFException e) {
+                  eof = true;
+              }
+          }
+      } catch (IOException | ClassNotFoundException e) {
+          e.printStackTrace();
+      }
+
+
+  }
+
+
+   public void storeData() {
+
+        storeTracksInFile();
+        storeAlbumsInFile();
+   }
+   public void loadData() {
+        loadTracks();
+        loadAlbums();
+   }
+
     public static void main(String[] args) {
-//        File pathos = new File("plac-yunosuke-pathos-pathos.wav");
-//        Track pathTrack = new Track("pathos", new Duration(366), pathos);
-//        instance.addTrack(pathTrack);
-//        File gimme = new File("plac-yunosuke-pathos-gimmeyourlove.wav");
-//        Track gimmeTrack = new Track("gimme", new Duration(477), gimme);
-//        instance.addTrack(gimmeTrack);
-//        instance.storeData();
-        instance.loadData();
+        Album newAbum = new Album("Pathos", "Yunosuke");
+            File pathos = new File("plac-yunosuke-pathos-pathos.wav");
+           Track pathTrack = new Track("pathos", new Duration(366), pathos);
+           File gimme = new File("plac-yunosuke-pathos-gimmeyourlove.wav");
+           Track gimmeTrack = new Track("gimme", new Duration(477), gimme);
+            instance.addTrack(gimmeTrack);
+            instance.addTrack(pathTrack);
+           newAbum.addToAlbum(gimmeTrack);
+           newAbum.addToAlbum(pathTrack);
+           instance.addAlbum(newAbum);
+
+           instance.storeData();
+
+
     }
 
 }

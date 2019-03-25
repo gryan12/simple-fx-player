@@ -28,7 +28,7 @@
    <right>
       <AnchorPane prefHeight="511.0" prefWidth="152.0" BorderPane.alignment="CENTER">
          <VBox>
-            <TextArea fx:id="rightDetailsArea" prefWidth="152" BorderPane.alignment="CENTER" />
+            <TextArea fx:id="rightDetailsArea" prefWidth="152" BorderPane.alignment="CENTER" wrapText="true"/>
          </VBox>
       </AnchorPane>
 

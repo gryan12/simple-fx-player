@@ -18,7 +18,7 @@ public class Track implements Serializable {
     protected Duration trackDuration;
     protected File file;
 
-    private long serialVersUID = 5L;
+    private long serialVersionUID = 5L;
 
 
 

@@ -46,46 +46,47 @@ public class Main extends Application {
         launch(args);
     }
 
-
+    @Override
     public void init() throws Exception {
        try {
-           DataStore.getInstance().setTrackList(FXCollections.observableArrayList());
-           File pathos = new File("plac-yunosuke-pathos-pathos.wav");
-           Track pathTrack = new Track("pathos", new Duration(366), pathos);
-           DataStore.getInstance().addTrack(pathTrack);
-           File gimme = new File("plac-yunosuke-pathos-gimmeyourlove.wav");
-           Track gimmeTrack = new Track("gimme", new Duration(477), gimme);
-           DataStore.getInstance().addTrack(gimmeTrack);
 
-           Album album = new Album();
-           album.setName("Pathos");
-           album.setArtist("Yunosuke");
-//           Image pathosArtwork = new Image("cover.png");
+           DataStore.getInstance().loadData();
 
-           for (Track track: DataStore.getInstance().getTracks()) {
-               album.addToAlbum(track);
-           }
-
-           DataStore.getInstance().addAlbum(album);
+//           DataStore.getInstance().setTrackList(FXCollections.observableArrayList());
+//           File pathos = new File("plac-yunosuke-pathos-pathos.wav");
+//           Track pathTrack = new Track("pathos", new Duration(366), pathos);
+//           DataStore.getInstance().addTrack(pathTrack);
+//           File gimme = new File("plac-yunosuke-pathos-gimmeyourlove.wav");
+//           Track gimmeTrack = new Track("gimme", new Duration(477), gimme);
+//           DataStore.getInstance().addTrack(gimmeTrack);
+//
+//           Album album = new Album();
+//           album.setName("Pathos");
+//           album.setArtist("Yunosuke");
+////           Image pathosArtwork = new Image("cover.png");
+//
+//           for (Track track: DataStore.getInstance().getTracks()) {
+//               album.addToAlbum(track);
+//           }
+//
+//           DataStore.getInstance().addAlbum(album);
 
        } catch (Exception e) {
            System.out.println("wat in the fuq did u do");
        }
     }
 
-    public void changeScenes(ActionEvent event) {
+    @Override
+    public void stop() {
         try {
-            System.out.println("pressed");
-            Stage stageTheNodeBelongsTo = (Stage)((Node)event.getSource()).getScene().getWindow();
-
-            Parent pane = FXMLLoader.load(getClass().getResource("albumView.fxml"));
-            Scene albumScene = new Scene(pane, 900, 500);
-
-        } catch (IOException ie) {
-            ie.printStackTrace();
+            DataStore.getInstance().storeData();
+        } catch (Exception e) {
+            System.out.println("Eror storing data");
+            e.printStackTrace();
         }
-
     }
+
+
 
 
 }

@@ -18,7 +18,7 @@ public class Duration implements Serializable {
     private int minutes;
     private int hours;
 
-    private long serialVersUID = 4L;
+    private long serialVersionUID = 4L;
 
     public Duration() {
         this.seconds = 0;

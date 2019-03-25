@@ -60,7 +60,8 @@ public class AlbumController {
     @FXML
     Label albumViewLabel;
 
-    private static Thread musicPlayerThread;
+    @FXML
+    ContextMenu albumListContextMenu;
 
 public void initialize() {
     }
@@ -76,22 +77,34 @@ public void initialize() {
     }
 
     public void setUpAlbumView() {
+        albumListContextMenu = new ContextMenu();
+        MenuItem albumMenuItem = new MenuItem("Go To Album");
+        albumMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Album album = albumListView.getSelectionModel().getSelectedItem();
+//                try {
+//                } catch (Exception e) {
+//                    System.out.println("cant play that sonny");
+//                    e.printStackTrace();
+//                }
+            }
+        });
+        albumListContextMenu.getItems().addAll(albumMenuItem);
 
-        albumListView.setItems(DataStore.getInstance().getAlbums());
+//        albumListView.setItems(DataStore.getInstance().getAlbums());
         albumListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Album>() {
             @Override
             public void changed(ObservableValue<? extends Album> observable, Album oldValue, Album newValue) {
                 if (newValue != null) {
                     Album album = albumListView.getSelectionModel().getSelectedItem();
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("albumView.fxml"));
-                    AlbumController controller = loader.getController();
-                    controller.rightDetailsArea.setText("Artist: " + album.getArtist()
+                    rightDetailsArea.setText("Artist: " + album.getArtist()
                             + "\n" + "Album name: " + album.getName());
                 }
             }
         });
 
-
+        albumListView.setItems(DataStore.getInstance().getAlbums());
         albumListView.setCellFactory(new Callback<ListView<Album>, ListCell<Album>>() {
             @Override
             public ListCell<Album> call(ListView<Album> param) {
@@ -106,14 +119,14 @@ public void initialize() {
                         }
                     }
                 };
-//                cell.emptyProperty().addListener(
-//                        (obs, wasEmpty, isNowEmpty) -> {
-//                            if (isNowEmpty) {
-//                                cell.setContextMenu(null);
-//                            } else {
-//                                cell.setContextMenu(listContextMenu);
-//                            }
-//                        });
+                cell.emptyProperty().addListener(
+                        (obs, wasEmpty, isNowEmpty) -> {
+                            if (isNowEmpty) {
+                                cell.setContextMenu(null);
+                            } else {
+                                cell.setContextMenu(albumListContextMenu);
+                            }
+                        });
                 return cell;
             }
         });
@@ -165,6 +178,22 @@ public void initialize() {
             }
         } catch(Exception e){
             e.printStackTrace();
+        }
+    }
+    public void handlePlayerControlls(ActionEvent ae) {
+        if (ae.getSource() == play) {
+            if (!player.shouldResume()) {
+                player.populateList(albumListView.getSelectionModel().getSelectedItem().getTrackList());
+                player.play();
+            } else {
+                player.resume();
+            }
+        } else if (ae.getSource() == pause) {
+            player.pause();
+        } else if (ae.getSource() == next) {
+            player.next();
+        } else if (ae.getSource() == prev) {
+            player.prev();
         }
     }
 
