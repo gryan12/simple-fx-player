@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--this fxml fopr scene change when entering viewing albums-->
+<BorderPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="638.0" prefWidth="846.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.172-ea" fx:controller="sample.AlbumController">
+   <left>
+      <AnchorPane prefHeight="573.0" prefWidth="129.0" BorderPane.alignment="CENTER">
+         <children>
+            <VBox alignment="CENTER" layoutY="30.0" prefHeight="543.0" prefWidth="143.0" style="-fx-spacing: 10; -fx-border-insets: 10;">
+               <children>
+                  <Label text="views" />
+                  <Button mnemonicParsing="false" text="Playlists" />
+                  <Button mnemonicParsing="false" text="Albums"/>
+                  <Button mnemonicParsing="false" text="All Tracks" onAction="#openTrackScene"/>
+                  <Button mnemonicParsing="false" text="Button" />
+                  <Button mnemonicParsing="false" text="Button" />
+                  <!--<Button onAction="#textPrev" text="test prev" />-->
+               </children>
+            </VBox>
+         </children>
+      </AnchorPane>
+   </left>
+   <right>
+      <AnchorPane prefHeight="511.0" prefWidth="152.0" BorderPane.alignment="CENTER">
+         <VBox>
+            <TextArea fx:id="rightDetailsArea" prefWidth="152" BorderPane.alignment="CENTER" />
+         </VBox>
+      </AnchorPane>
+
+   </right>
+   <bottom>
+      <VBox prefHeight="62.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox fx:id="controllBox" alignment="CENTER" prefHeight="59.0" prefWidth="600.0">
+               <children>
+                  <!--<Button fx:id="prev" mnemonicParsing="false" onAction="#testPrev" text="Previous" />-->
+                  <!--<Button fx:id="play" mnemonicParsing="false" onAction="#handleTestPlay" text="Play" />-->
+                  <!--<Button fx:id="pause" mnemonicParsing="false" onAction="#testPause" text="Pause" />-->
+                  <!--<Button fx:id="next" mnemonicParsing="false" onAction="#testNext" text="Next" />-->
+               </children>
+            </HBox>
+            <HBox fx:id="sliderBox" alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Slider fx:id="slider" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </bottom>
+   <top>
+      <VBox prefHeight="65.0" prefWidth="846.0" BorderPane.alignment="CENTER">
+         <children>
+            <MenuBar>
+               <menus>
+                  <Menu mnemonicParsing="false" text="File">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="Load Track" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" text="Load Album" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" text="Create Playlist" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Edit">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="Delete" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Help">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                     </items>
+                  </Menu>
+               </menus>
+            </MenuBar>
+            <VBox>
+               <ToolBar prefHeight="40.0" prefWidth="200.0">
+                  <items>
+                     <!--<Button mnemonicParsing="false" onAction="#loadSong" text="New Song" />-->
+                     <!--<Button mnemonicParsing="false" onAction="#loadAlbum" text="New Album" />-->
+                     <!--<Button mnemonicParsing="false" text="New Playlist" />-->
+                     <!--<Button onAction="#testLoad" text="test load" />-->
+                  </items>
+               </ToolBar>
+               <Label fx:id="currentSongLabel" text="all tracks" />
+            </VBox>
+         </children>
+      </VBox>
+   </top>
+   <center>
+      <!--<children>-->
+      <AnchorPane fx:id="centrePane">
+         <Label fx:id="albumViewLabel" alignment="CENTER" prefWidth="175.0" text="Default window: all loaded tracks"
+                AnchorPane.topAnchor="0"/>
+         <ListView fx:id="albumListView" layoutX="2.0" layoutY="60.0" prefHeight="439.0" prefWidth="548.0" BorderPane.alignment="CENTER"
+                   AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="20"/>
+      </AnchorPane>
+
+   </center>
+</BorderPane>
