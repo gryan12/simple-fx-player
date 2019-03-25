@@ -9,11 +9,16 @@ Date: 01/11/2018
  */
 
 package sample.trackClasses;
-public class Duration {
+
+import java.io.Serializable;
+
+public class Duration implements Serializable {
 
     private int seconds;
     private int minutes;
     private int hours;
+
+    private long serialVersUID = 4L;
 
     public Duration() {
         this.seconds = 0;

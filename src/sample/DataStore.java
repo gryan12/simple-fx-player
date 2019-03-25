@@ -8,7 +8,7 @@ import sample.trackClasses.Duration;
 import sample.trackClasses.Playlist;
 import sample.trackClasses.Track;
 
-import java.io.File;
+import java.io.*;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -73,5 +73,43 @@ public class DataStore {
    }
 
 
+   public void storeData() {
+
+        try(ObjectOutputStream output = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("tracks.dat")))) {
+            for (Track track: trackList) {
+                output.writeObject(track);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+   }
+   public void loadData() {
+
+        try (ObjectInputStream input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("tracks.dat")))) {
+            boolean eof = false;
+            while (!eof) {
+                try {
+                    Track track = (Track) input.readObject();
+                    System.out.println("Track: " + track.getTitle() + " : " + track.getDuration().toString());
+                    trackList.add(track);
+                } catch (EOFException e) {
+                    eof = true;
+                }
+            }
+       } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+       }
+   }
+
+    public static void main(String[] args) {
+//        File pathos = new File("plac-yunosuke-pathos-pathos.wav");
+//        Track pathTrack = new Track("pathos", new Duration(366), pathos);
+//        instance.addTrack(pathTrack);
+//        File gimme = new File("plac-yunosuke-pathos-gimmeyourlove.wav");
+//        Track gimmeTrack = new Track("gimme", new Duration(477), gimme);
+//        instance.addTrack(gimmeTrack);
+//        instance.storeData();
+        instance.loadData();
+    }
 
 }

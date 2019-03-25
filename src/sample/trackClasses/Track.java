@@ -10,12 +10,15 @@ Date: 01/11/2018
 package sample.trackClasses;
 
 import java.io.File;
+import java.io.Serializable;
 
-public class Track {
+public class Track implements Serializable {
 
     protected String title;
     protected Duration trackDuration;
     protected File file;
+
+    private long serialVersUID = 5L;
 
 
 
@@ -41,5 +44,6 @@ public class Track {
         this.trackDuration = trackDuration;
         this.file = file;
     }
+
 
 }

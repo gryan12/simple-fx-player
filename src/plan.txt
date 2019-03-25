@@ -30,5 +30,5 @@ OK TO SOLVE THREAD ISSUES:
 will split all of the file loading and shit out of hte music playuer class, put it in the datastorage or
 its own unique class, (FileManager, MusicPlayer, DataStorage).
 
-Will need to for MusicPlayer, extend the thread class, override the run method to properly sort out
-having the music player as single-threaded only.
+                                                Will need to for MusicPlayer, extend the thread class, override the run method to properly sort out
+                                                having the music player as single-threaded only.

@@ -34,6 +34,7 @@ public class AlbumController {
 
     private Scene trackScene;
     private AutoPlayer player;
+
     @FXML
     ListView<Album> albumListView;
 
