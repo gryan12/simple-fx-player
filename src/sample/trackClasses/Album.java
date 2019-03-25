@@ -11,6 +11,7 @@ import javafx.scene.image.Image;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Album implements Serializable {
 
@@ -37,6 +38,22 @@ public class Album implements Serializable {
         this.name = name;
         this.artist = artist;
         this.trackList = new ArrayList<>();
+    }
+
+
+    //not ideal for now i do not think, but its okay.
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Album)) return false;
+        Album album = (Album) o;
+        return Objects.equals(name, album.name) &&
+                Objects.equals(artist, album.artist);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, artist);
     }
 
     public void addToAlbum(Track newTrack) {

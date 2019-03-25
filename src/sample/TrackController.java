@@ -204,40 +204,59 @@ public class TrackController {
         setViewTracks(DataStore.getInstance().getTracks());
     }
 
-    @FXML
-    public void loadAlbum() {
-        Album album = new Album();
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setInitialDirectory(new File("./"));
-        File file = chooser.showDialog(mainPane.getScene().getWindow());
-        if (file != null) {
-            try {
-                album = FileManager.getInstance().directoryToAlbum(FileSystems.getDefault().getPath(file.getAbsolutePath()));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//    @FXML
+//    public void loadAlbum() {
+//        Album album = new Album();
+//        DirectoryChooser chooser = new DirectoryChooser();
+//        chooser.setInitialDirectory(new File("./"));
+//        File file = chooser.showDialog(mainPane.getScene().getWindow());
+//        if (file != null) {
+//            try {
+//                album = FileManager.getInstance().directoryToAlbum(FileSystems.getDefault().getPath(file.getAbsolutePath()));
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//
+//            for (Track track : album.getTrackList()) {
+//                DataStore.getInstance().addTrack(track);
+//            }
+//        }
+//    }
+//
+//    @FXML
+//    public void loadSong() {
+//        FileChooser chooser = new FileChooser();
+//        FileNameExtensionFilter filter = new FileNameExtensionFilter("wav files", "*.wav");
+//        chooser.setInitialDirectory(new File("./"));
+//
+//        try {
+//            File newFile = chooser.showOpenDialog(mainPane.getScene().getWindow());
+//
+//            Track newTrack = FileManager.getInstance().loadTrack(newFile);
+//            DataStore.getInstance().addTrack(newTrack);
+//        } catch(Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
-            for (Track track : album.getTrackList()) {
-                DataStore.getInstance().addTrack(track);
-            }
-        }
-    }
-
     @FXML
-    public void loadSong() {
-        FileChooser chooser = new FileChooser();
+    public void loadSingleTrack() {
+
         FileNameExtensionFilter filter = new FileNameExtensionFilter("wav files", "*.wav");
+        FileChooser chooser = new FileChooser();
         chooser.setInitialDirectory(new File("./"));
+        File file = chooser.showOpenDialog(mainPane.getScene().getWindow());
 
-        try {
-            File newFile = chooser.showOpenDialog(mainPane.getScene().getWindow());
+        String[] trackDetails = file.toString().split("-");
+        Duration duration = new Duration();
+        duration = new Duration(duration.extractDuration(file));
+        Track newTrack = new Track(trackDetails[3], duration, file);
 
-            Track newTrack = FileManager.getInstance().loadTrack(newFile);
-            DataStore.getInstance().addTrack(newTrack);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+        DataStore.getInstance().getTracks().add(newTrack);
     }
+
+
+
 
     @FXML
     public void testLoad() {
@@ -246,12 +265,18 @@ public class TrackController {
         chooser.setInitialDirectory(new File("./"));
         File file = chooser.showDialog(mainPane.getScene().getWindow());
         System.out.println(file.canRead());
-        String[] albumDetails = file.toString().split("-");
-        Album newAlbum = new Album(albumDetails[0], albumDetails[1]);
+        Album newAlbum;
+        if (file.toString().contains("-")) {
+            String[] albumDetails = file.toString().split("-");
+            newAlbum = new Album(albumDetails[0], albumDetails[1]);
+        } else {
+            newAlbum = new Album(file.toString(), file.toString());
+        }
+
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(file.toPath())) {
             for (Path streamPath : stream) {
                 String[] details = streamPath.toString().split("-");
-                String trackName = details[4];
+                String trackName = details[details.length-1];
                 Duration duration = new Duration();
                 AudioFormat format;
                 try (AudioInputStream streaminput = AudioSystem.getAudioInputStream(streamPath.toFile())) {

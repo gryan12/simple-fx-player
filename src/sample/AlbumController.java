@@ -36,6 +36,7 @@ public class AlbumController {
     private AutoPlayer player;
     private TrackController trackController;
 
+
     @FXML
     ListView<Album> albumListView;
 
@@ -186,8 +187,13 @@ public void initialize() {
         chooser.setInitialDirectory(new File("./"));
         File file = chooser.showDialog(mainPane.getScene().getWindow());
         System.out.println(file.canRead());
-        String[] albumDetails = file.toString().split("-");
-        Album newAlbum = new Album(albumDetails[0], albumDetails[1]);
+        Album newAlbum;
+        if (file.toString().contains("-")) {
+            String[] albumDetails = file.toString().split("-");
+            newAlbum = new Album(albumDetails[0], albumDetails[1]);
+        } else {
+            newAlbum = new Album(file.toString(), file.toString());
+        }
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(file.toPath())) {
             for (Path streamPath : stream) {
                 String[] details = streamPath.toString().split("-");

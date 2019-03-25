@@ -3,6 +3,7 @@ package sample;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import sample.trackClasses.Album;
 import sample.trackClasses.Duration;
 import sample.trackClasses.Playlist;
@@ -12,7 +13,9 @@ import java.io.*;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 //another singlet, for learning and convenience's sake. will just store the data as binary data for now.
 //the file will keep a record of the absolute paths of any tracks or albums that are added/saved to the
@@ -24,6 +27,7 @@ public class DataStore {
     private ObservableList<Playlist> playlistList = FXCollections.observableArrayList();
     private ObservableList<Album> albumList =FXCollections.observableArrayList();
     private ObservableList<Track> trackList = FXCollections.observableArrayList();
+    private ObservableList<Track>  currentTrackList = FXCollections.observableArrayList();
     private static DataStore instance = new DataStore();
 
 
@@ -31,7 +35,9 @@ public class DataStore {
 
     }
 
-//    static {
+
+
+    //    static {
 //        File pathos = new File("plac-yunosuke-pathos-pathos.wav");
 //        Track pathTrack = new Track("pathos", new Duration(366), pathos);
 //        ArrayList<Track> tempList = new ArrayList<>();
@@ -41,6 +47,13 @@ public class DataStore {
 //        tempList.add(gimmeTrack);
 //        trackList.setAll(tempList);
 //    }
+
+    public void setCurrentTracks(List<Track> trackList) {
+       currentTrackList = FXCollections.observableArrayList(trackList);
+    }
+
+
+
 
     public static DataStore getInstance() {
        return instance;
@@ -73,9 +86,16 @@ public class DataStore {
    }
 
 
+   //storing via hashset just helps to ensure that duplicates are not sneakily being stored.
+    //might be worth adding tracklist to equals method after finished testing
    public void storeAlbumsInFile() {
        try(ObjectOutputStream output = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("albums.dat")))) {
+           Set<Album> albumSet = new HashSet<>();
+
            for (Album album: albumList) {
+               albumSet.add(album);
+           }
+           for (Album album: albumSet) {
                output.writeObject(album);
            }
        } catch (IOException e) {
@@ -108,6 +128,7 @@ public class DataStore {
       } catch (IOException | ClassNotFoundException e) {
           e.printStackTrace();
       }
+      currentTrackList.setAll(trackList);
   }
   public void loadAlbums() {
       try (ObjectInputStream input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("albums.dat")))) {
@@ -125,17 +146,23 @@ public class DataStore {
           e.printStackTrace();
       }
 
+      for (Album album: albumList) {
+          for (Track track: album.getTrackList()) {
+              trackList.add(track);
+          }
+      }
+      currentTrackList.setAll(trackList);
 
   }
 
 
    public void storeData() {
 
-        storeTracksInFile();
+//        storeTracksInFile();
         storeAlbumsInFile();
    }
    public void loadData() {
-        loadTracks();
+//        loadTracks();
         loadAlbums();
    }
 

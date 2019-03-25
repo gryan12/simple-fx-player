@@ -10,6 +10,12 @@ Date: 01/11/2018
 
 package sample.trackClasses;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
 public class Duration implements Serializable {
@@ -101,5 +107,21 @@ public class Duration implements Serializable {
         Duration duration = new Duration(1000);
         duration.printDuration();
     }
+
+    public int extractDuration(File file) {
+        float totalLength = 0;
+        try (AudioInputStream streaminput = AudioSystem.getAudioInputStream(file)) {
+            AudioFormat format;
+            format = streaminput.getFormat();
+            long size = file.length();
+            int frameSize = format.getFrameSize();
+            float frameRate = format.getFrameRate();
+             totalLength = (size / (frameSize * frameRate));
+        } catch (UnsupportedAudioFileException | IOException e) {
+            e.printStackTrace();
+        }
+        return (int)totalLength;
+    }
+
 
 }
