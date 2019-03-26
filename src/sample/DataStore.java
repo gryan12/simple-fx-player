@@ -22,6 +22,9 @@ import java.util.Set;
 //music player. this way will not need to copy/move files around to new directories for albums/playlists,
 //as playlists will be played by reference to the paths the files are in(i.e. there is only ever one copy of any
 //given track).
+
+//the currentTrackList is used for displaying total traks in the list view, instrad of the overall track list,
+//hjust to help maintain integrity of the main tracklist during sessions
 public class DataStore {
     private Path musicStorage = FileSystems.getDefault().getPath("trackStorage.txt");
     private ObservableList<Playlist> playlistList = FXCollections.observableArrayList();
@@ -63,12 +66,22 @@ public class DataStore {
         trackList.add(track);
     }
 
+    public void setCurrentToTotal() {
+        currentTrackList.addAll(trackList);
+    }
+
+    public void remakeCurrent(List<Track> list) {
+        currentTrackList = FXCollections.observableArrayList(list);
+    }
 
 
     public  ObservableList<Track> getTracks() {
         return trackList;
     }
 
+    public ObservableList<Track> getCurrentTracks() {
+        return currentTrackList;
+    }
     public void setTrackList(ObservableList<Track> trackList) {
         this.trackList = trackList;
     }

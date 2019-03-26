@@ -85,7 +85,12 @@ public void initialize() {
     //track view with all loaded tracks
     @FXML
     public void goToAllTracks() {
-        trackController.setViewTracks(DataStore.getInstance().getTracks());
+        System.out.println("all tracks called");
+
+        DataStore.getInstance().remakeCurrent(DataStore.getInstance().getTracks());
+        trackController.setViewTracks(DataStore.getInstance().getCurrentTracks());
+        System.out.println("size current: " + DataStore.getInstance().getCurrentTracks().size());
+        System.out.println("\n size total: " + DataStore.getInstance().getTracks().size());
         Stage primaryStage = (Stage)((Node)mainPane).getScene().getWindow();
         primaryStage.setScene(trackScene);
     }
@@ -93,9 +98,13 @@ public void initialize() {
     //trackview with that album's tracks
     @FXML
     public void openAlbum(Album album) {
-        trackController.setViewTracks(album.getTrackList());
+
+
         Stage primaryStage = (Stage)((Node)mainPane).getScene().getWindow();
         primaryStage.setScene(trackScene);
+        DataStore.getInstance().setCurrentTracks(album.getTrackList());
+        trackController.setViewTracks(DataStore.getInstance().getCurrentTracks());
+
     }
 
     @FXML

@@ -147,7 +147,7 @@ public class TrackController {
                 }
             }
         });
-        trackListView.setItems(DataStore.getInstance().getTracks());
+        trackListView.setItems(DataStore.getInstance().getCurrentTracks());
         trackListView.setCellFactory(new Callback<ListView<Track>, ListCell<Track>>() {
             @Override
             public ListCell<Track> call(ListView<Track> param) {
