@@ -96,6 +96,11 @@ public class TrackController {
     @FXML
     Button testPrev;
 
+    @FXML
+    Label currentTrackLabel;
+
+    @FXML
+    Label viewLabel;
 
     @FXML
     ContextMenu listContextMenu;
@@ -274,96 +279,67 @@ public class TrackController {
 
 
     @FXML
-    public void testLoad() {
+    public void loadAlbum() {
         DirectoryChooser chooser = new DirectoryChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("wav files", "*.wav");
         chooser.setInitialDirectory(new File("./"));
         File file = chooser.showDialog(mainPane.getScene().getWindow());
-        System.out.println(file.canRead());
-        Album newAlbum;
-        if (file.toString().contains("-")) {
-            String[] albumDetails = file.toString().split("-");
-            newAlbum = new Album(albumDetails[0], albumDetails[1]);
-        } else {
-            newAlbum = new Album(file.toString(), file.toString());
-        }
+        if (file != null) {
+            System.out.println(file.canRead());
+            Album newAlbum;
+            if (file.toString().contains("-")) {
+                String[] albumDetails = file.toString().split("-");
+                newAlbum = new Album(albumDetails[0], albumDetails[1]);
+            } else {
+                newAlbum = new Album(file.toString(), file.toString());
+            }
 
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(file.toPath())) {
-            for (Path streamPath : stream) {
-                String[] details = streamPath.toString().split("-");
-                String trackName = details[details.length-1];
-                Duration duration = new Duration();
-                AudioFormat format;
-                try (AudioInputStream streaminput = AudioSystem.getAudioInputStream(streamPath.toFile())) {
-                    format = streaminput.getFormat();
-                    long size = streamPath.toFile().length();
-                    int frameSize = format.getFrameSize();
-                    float frameRate = format.getFrameRate();
-                    float totalLength = (size / (frameSize * frameRate));
-                    duration = new Duration((int) totalLength);
-                    Track newTrack = new Track(trackName, duration, streamPath.toFile());
-                    newAlbum.addToAlbum(newTrack);
-                    DataStore.getInstance().addTrack(newTrack);
-                    for (String detail : details) {
-                        System.out.println("\t" + detail);
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(file.toPath())) {
+                for (Path streamPath : stream) {
+                    String[] details = streamPath.toString().split("-");
+                    String trackName = details[details.length - 1];
+                    Duration duration = new Duration();
+                    AudioFormat format;
+                    try (AudioInputStream streaminput = AudioSystem.getAudioInputStream(streamPath.toFile())) {
+                        format = streaminput.getFormat();
+                        long size = streamPath.toFile().length();
+                        int frameSize = format.getFrameSize();
+                        float frameRate = format.getFrameRate();
+                        float totalLength = (size / (frameSize * frameRate));
+                        duration = new Duration((int) totalLength);
+                        Track newTrack = new Track(trackName, duration, streamPath.toFile());
+                        newAlbum.addToAlbum(newTrack);
+                        DataStore.getInstance().addTrack(newTrack);
+                        for (String detail : details) {
+                            System.out.println("\t" + detail);
+                        }
                     }
                 }
+                DataStore.getInstance().addAlbum(newAlbum);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            DataStore.getInstance().addAlbum(newAlbum);
-        } catch(Exception e){
-            e.printStackTrace();
+        } else {
+            System.out.println("exiting chooser");
+            return;
         }
     }
 
-    @FXML
-    public void handleControlls(ActionEvent ae) {
-        if (ae.getSource() == play) {
-            final Task task = new Task() {
-                @Override
-                protected Object call()  throws Exception {
-                    FilePlayer.getInstance().playtest(trackListView.getSelectionModel().getSelectedItem().getFile());
-                    return null;
-                }
-            };
-            System.out.println("play pressed");
-            musicPlayerThread = new Thread(task);
-            musicPlayerThread.start();
-        } else if (ae.getSource() == pause) {
-            System.out.println("paused pressed");
-            if (FilePlayer.isIsPlaying()) {
-                FilePlayer.getInstance().pause();
-            } else {
-                return;
-            }
-        } else if (ae.getSource() == next) {
-            trackListView.getSelectionModel().selectNext();
-            if (FilePlayer.isIsPlaying()) {
-                FilePlayer.getInstance().pause();
-                play(trackListView.getSelectionModel().getSelectedItem().getFile());
-            }
-            } else if (ae.getSource() == prev) {
-                trackListView.getSelectionModel().selectPrevious();
-                if (FilePlayer.isIsPlaying()) {
-                    FilePlayer.getInstance().pause();
-                    play(trackListView.getSelectionModel().getSelectedItem().getFile());
-                }
-
-            }
-        }
 
 
         //funfctions to handle music player controls =============== many unused need to cleanup
+    //the player seems to work fine even though it shouldnt - for some reason the designated track plays even
+    //when an index is not surplied.
     @FXML
     public void testPlay() {
         player.populateList(trackListView.getItems());
+        System.out.println(player.getCurrentIndex());
         player.play();
     }
 
-    @FXML
-    public void testPause() {
-        player.pause();
-    }
 
+    //PLACEHOLDER ======== NEED FUNCTION IN AUTOPLAYER WHICH INFORMS CONTROLLER OF CURRENT TRACK, RATHER THAN
+    //IS IMPLEMENTED IN THIS MEHTOD
     public void contextPlay() {
         int count = 0;
         int index = 0;
@@ -374,51 +350,40 @@ public class TrackController {
             count ++;
         }
         player.populateList(trackListView.getItems(), index);
+        System.out.println(player.getCurrentIndex());
+        setcurrentTrackLabel(player.getToPlay().get(player.getCurrentIndex()));
         player.newPlay();
 
     }
 
+    @FXML
+    public void handlePlayerControlls(ActionEvent ae) {
+        if (ae.getSource() == play) {
+            contextPlay();
+        } else if (ae.getSource() == pause) {
+            System.out.println("pause");
+            player.pause();
+        } else if (ae.getSource() == next) {
+            System.out.println("next");
+            player.next();
+        } else if (ae.getSource() == prev) {
+            System.out.println("prev");
+            player.prev();
+        }
+    }
+
+
     public void handleTestPlay() {
 
         if (!player.shouldResume()) {
-            testPlay();
+            contextPlay();
         } else {
             player.resume();
         }
     }
 
 
-    public void testResume() {
-        player.resume();
-    }
-
-    public void testNext() {
-        player.next();
-    }
-
-    public void testPrev() {
-        player.prev();
-    }
-
-    @FXML
-    public void interrupt() throws InterruptedException {
-        musicPlayerThread.interrupt();
-    }
-
-    @FXML
-    public void play(File file) {
-        final Task task = new Task() {
-            @Override
-            protected Object call()  throws Exception {
-                FilePlayer.getInstance().playtest(trackListView.getSelectionModel().getSelectedItem().getFile());
-                return null;
-            }
-        };
-        System.out.println("play pressed");
-        musicPlayerThread = new Thread(task);
-        musicPlayerThread.start();
-
-    }
+    //=======================
 
     //======================
 
@@ -432,7 +397,10 @@ public class TrackController {
         }
     }
 
-
-
-
+    public void setViewLabel(String text) {
+       this.viewLabel.setText(text);
+    }
+    public void setcurrentTrackLabel(Track track) {
+       currentTrackLabel.setText(track.getTitle());
+    }
 }

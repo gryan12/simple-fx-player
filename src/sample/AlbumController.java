@@ -91,6 +91,7 @@ public void initialize() {
         System.out.println("all tracks called");
         DataStore.getInstance().setCurrent(DataStore.getInstance().getTracks());
         trackController.setViewTracks(DataStore.getInstance().getCurrentTracks());
+        trackController.setViewLabel("All Loaded Tracks");
         System.out.println("size current: " + DataStore.getInstance().getCurrentTracks().size());
         System.out.println("\n size total: " + DataStore.getInstance().getTracks().size());
         Stage primaryStage = (Stage)((Node)mainPane).getScene().getWindow();
@@ -103,6 +104,7 @@ public void initialize() {
 
         DataStore.getInstance().setCurrent(album.getTrackList());
         trackController.setViewTracks(DataStore.getInstance().getCurrentTracks());
+        trackController.setViewLabel(album.getName() + " : " + album.getArtist());
         Stage primaryStage = (Stage)((Node)mainPane).getScene().getWindow();
         primaryStage.setScene(trackScene);
     }
@@ -112,6 +114,7 @@ public void initialize() {
         Album album = albumListView.getSelectionModel().getSelectedItem();
         DataStore.getInstance().setCurrent(album.getTrackList());
         trackController.setViewTracks(DataStore.getInstance().getCurrentTracks());
+        trackController.setViewLabel("All tracks in album: " + album.getName() + " by: " + album.getArtist());
         Stage primaryStage = (Stage)((Node)mainPane).getScene().getWindow();
         primaryStage.setScene(trackScene);
     }
@@ -199,40 +202,48 @@ public void initialize() {
         FileNameExtensionFilter filter = new FileNameExtensionFilter("wav files", "*.wav");
         chooser.setInitialDirectory(new File("./"));
         File file = chooser.showDialog(mainPane.getScene().getWindow());
-        System.out.println(file.canRead());
-        Album newAlbum;
-        if (file.toString().contains("-")) {
-            String[] albumDetails = file.toString().split("-");
-            newAlbum = new Album(albumDetails[0], albumDetails[1]);
-        } else {
-            newAlbum = new Album(file.toString(), file.toString());
-        }
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(file.toPath())) {
-            for (Path streamPath : stream) {
-                String[] details = streamPath.toString().split("-");
-                String trackName = details[4];
-                Duration duration = new Duration();
-                AudioFormat format;
-                try (AudioInputStream streaminput = AudioSystem.getAudioInputStream(streamPath.toFile())) {
-                    format = streaminput.getFormat();
-                    long size = streamPath.toFile().length();
-                    int frameSize = format.getFrameSize();
-                    float frameRate = format.getFrameRate();
-                    float totalLength = (size / (frameSize * frameRate));
-                    duration = new Duration((int) totalLength);
-                    Track newTrack = new Track(trackName, duration, streamPath.toFile());
-                    newAlbum.addToAlbum(newTrack);
-                    DataStore.getInstance().addTrack(newTrack);
-                    for (String detail : details) {
-                        System.out.println("\t" + detail);
+        if (file != null) {
+
+
+            System.out.println(file.canRead());
+            Album newAlbum;
+            if (file.toString().contains("-")) {
+                String[] albumDetails = file.toString().split("-");
+                newAlbum = new Album(albumDetails[0], albumDetails[1]);
+            } else {
+                newAlbum = new Album(file.toString(), file.toString());
+            }
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(file.toPath())) {
+                for (Path streamPath : stream) {
+                    String[] details = streamPath.toString().split("-");
+                    String trackName = details[4];
+                    Duration duration = new Duration();
+                    AudioFormat format;
+                    try (AudioInputStream streaminput = AudioSystem.getAudioInputStream(streamPath.toFile())) {
+                        format = streaminput.getFormat();
+                        long size = streamPath.toFile().length();
+                        int frameSize = format.getFrameSize();
+                        float frameRate = format.getFrameRate();
+                        float totalLength = (size / (frameSize * frameRate));
+                        duration = new Duration((int) totalLength);
+                        Track newTrack = new Track(trackName, duration, streamPath.toFile());
+                        newAlbum.addToAlbum(newTrack);
+                        DataStore.getInstance().addTrack(newTrack);
+                        for (String detail : details) {
+                            System.out.println("\t" + detail);
+                        }
                     }
                 }
+                DataStore.getInstance().addAlbum(newAlbum);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            DataStore.getInstance().addAlbum(newAlbum);
-        } catch(Exception e){
-            e.printStackTrace();
+        } else {
+            System.out.println("exiting chooser");
+            return;
         }
     }
+    @FXML
     public void handlePlayerControlls(ActionEvent ae) {
         if (ae.getSource() == play) {
             if (!player.shouldResume()) {

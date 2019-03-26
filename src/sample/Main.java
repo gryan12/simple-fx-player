@@ -38,7 +38,7 @@ public class Main extends Application {
         albumController.setTrackController(trackController);
         trackController.setAlbumController(albumController);
 
-        primaryStage.setTitle("All Tracks");
+        primaryStage.setTitle("Simple FX Wav Player");
         primaryStage.setScene(trackScene);
         trackController.setUpListView();
         primaryStage.show();

@@ -47,12 +47,15 @@
    <bottom>
       <VBox prefHeight="62.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
+             <HBox alignment="CENTER">
+                 <Label text="" fx:id="currentTrackLabel" alignment="CENTER"/>
+             </HBox>
             <HBox fx:id="controllBox" alignment="CENTER" prefHeight="59.0" prefWidth="600.0">
                <children>
-                  <Button fx:id="prev" mnemonicParsing="false" onAction="#testPrev" text="Previous" />
-                  <Button fx:id="play" mnemonicParsing="false" onAction="#handleTestPlay" text="Play" />
-                  <Button fx:id="pause" mnemonicParsing="false" onAction="#testPause" text="Pause" />
-                  <Button fx:id="next" mnemonicParsing="false" onAction="#testNext" text="Next" />
+                  <Button fx:id="prev" mnemonicParsing="false" onAction="#handlePlayerControlls" text="Previous" />
+                  <Button fx:id="play" mnemonicParsing="false" onAction="#handlePlayerControlls" text="Play" />
+                  <Button fx:id="pause" mnemonicParsing="false" onAction="#handlePlayerControlls" text="Pause" />
+                  <Button fx:id="next" mnemonicParsing="false" onAction="#handlePlayerControlls" text="Next" />
                    <!--<Button fx:id="testResume" text="testResume" onAction="#testResume"/>-->
                </children>
             </HBox>
@@ -94,9 +97,9 @@
                  <ToolBar prefHeight="40.0" prefWidth="200.0">
                      <items>
                          <!--<Button mnemonicParsing="false" onAction="#loadSong" text="New Song" />-->
-                         <!--<Button mnemonicParsing="false" onAction="#loadAlbum" text="New Album" />-->
+                         <Button mnemonicParsing="false" onAction="#loadAlbum" text="New Album" />
                          <Button mnemonicParsing="false" text="New Playlist" />
-                         <Button onAction="#testLoad" text="test load" />
+                         <!--<Button onAction="#testLoad" text="test load" />-->
                          <!--<Button onAction="#playerStatus" text="status"/>-->
                      </items>
                  </ToolBar>

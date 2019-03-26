@@ -82,7 +82,7 @@
                <ToolBar prefHeight="40.0" prefWidth="200.0">
                   <items>
                      <!--<Button mnemonicParsing="false" onAction="#loadSong" text="New Song" />-->
-                     <!--<Button mnemonicParsing="false" onAction="#loadAlbum" text="New Album" />-->
+                     <Button mnemonicParsing="false" onAction="#loadAlbum" text="Load New Album" />
                      <!--<Button mnemonicParsing="false" text="New Playlist" />-->
                      <!--<Button onAction="#testLoad" text="test load" />-->
                   </items>

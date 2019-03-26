@@ -23,6 +23,7 @@ public class AutoPlayer  {
     private boolean resuming = false;
     private Task<?> lastTask = null;
 
+
     private void runTask(Task<?> task) {
         registerTask(task);
         new Thread(task).start();
@@ -67,7 +68,6 @@ public class AutoPlayer  {
         };
         return newTask;
     }
-
 
 
     private Task<?> generateNextTask() {
@@ -159,7 +159,21 @@ public class AutoPlayer  {
    }
 
 
+    public List<Track> getToPlay() {
+        return toPlay;
+    }
 
+    public void setToPlay(List<Track> toPlay) {
+        this.toPlay = toPlay;
+    }
+
+    public int getCurrentIndex() {
+        return currentIndex;
+    }
+
+    public void setCurrentIndex(int currentIndex) {
+        this.currentIndex = currentIndex;
+    }
 
     private static class corePlayer {
         private static corePlayer instance = new corePlayer();
