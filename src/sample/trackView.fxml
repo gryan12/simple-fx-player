@@ -111,9 +111,9 @@
    <center>
          <!--<children>-->
             <AnchorPane fx:id="centrePane" styleClass="trackView">
-                <HBox alignment="CENTER">
-                    <Label fx:id="viewLabel" alignment="CENTER" prefWidth="175.0" text="Default window: all loaded tracks"/>
-                </HBox>
+                <!--<HBox alignment="CENTER" AnchorPane.leftAnchor="380">-->
+                    <Label fx:id="viewLabel" alignment="CENTER" text="All Tracks" AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0" maxWidth="-Infinity"/>
+                <!--</HBox>-->
                 <ListView fx:id="trackListView" layoutX="2.0" layoutY="60.0" prefHeight="439.0" prefWidth="548.0" BorderPane.alignment="CENTER"
                     AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="20"/>
             </AnchorPane>

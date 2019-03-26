@@ -78,10 +78,12 @@
 */
 
 .trackView Label {
-    -fx-font-size: 15px;
-    -fx-underline: true;
-    -fx-font-color:blue;
-    -fx-text-inner-color: blue;
+       -fx-font-size: 14pt;
+       -fx-font-family: "Tahoma";
+       -fx-text-fill: white;
+       -fx-opacity: 0.9;
+       -fx-text-alignment: center;
+
 }
 
 .list-cell: filled:selected:focused, .list-cell:filled:selected {
