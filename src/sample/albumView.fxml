@@ -13,7 +13,7 @@
          <children>
             <VBox alignment="CENTER" layoutY="30.0" prefHeight="543.0" prefWidth="143.0" style="-fx-spacing: 10; -fx-border-insets: 10;">
                <children>
-                  <Label text="views" />
+                  <Label text="Views" />
                   <!--<Button mnemonicParsing="false" text="Playlists" />-->
                   <Button mnemonicParsing="false" text="Albums"/>
                   <Button mnemonicParsing="false" text="All Tracks" onAction="#goToAllTracks"/>

@@ -41,6 +41,10 @@ public class AutoPlayer  {
             @Override
             protected Object call() throws Exception {
                 player.play(toPlay.get(currentIndex).getFile());
+                currentIndex++;
+                if (player.startNext && currentIndex < (toPlay.size() - 1)) {
+                    generatePlayTask();
+                }
                 return null;
             }
         };
@@ -53,6 +57,10 @@ public class AutoPlayer  {
             protected Object call() throws Exception {
                 player.pause();
                 player.play(toPlay.get(currentIndex).getFile());
+                currentIndex++;
+                if (player.startNext && currentIndex < (toPlay.size() - 1)) {
+                    generatePlayTask();
+                }
                 return null;
             }
         };
@@ -175,6 +183,14 @@ public class AutoPlayer  {
         this.currentIndex = currentIndex;
     }
 
+    //for slider functionality
+    public Clip getClip() {
+        return player.clip;
+    }
+    public void setClipPosition(int x) {
+        player.clip.setFramePosition(x);
+    }
+
     private static class corePlayer {
         private static corePlayer instance = new corePlayer();
         private static boolean isPlaying;
@@ -184,7 +200,7 @@ public class AutoPlayer  {
         private final CyclicBarrier barrier = new CyclicBarrier(2);
         private static Clip clip;
         private static AudioInputStream audioIn;
-
+        private static boolean startNext = false;
 
         private void printStatus() {
             System.out.println("is playing: " + isPlaying
@@ -257,7 +273,10 @@ public class AutoPlayer  {
 
         private void listenForFileEnd(Clip clip) {
             clip.addLineListener(event -> {
-                if (event.getType() == LineEvent.Type.STOP) waitOnBarrier();
+                if (event.getType() == LineEvent.Type.STOP){
+                    startNext = true;
+                    waitOnBarrier();
+                }
             });
         }
 
@@ -272,9 +291,6 @@ public class AutoPlayer  {
         private void waitForSoundEnd() {
             waitOnBarrier();
         }
-
-
-
 
 
     }

@@ -105,6 +105,9 @@ public class TrackController {
     @FXML
     ContextMenu listContextMenu;
 
+    @FXML
+    public Slider slider;
+
     public void initialize() {
     }
 
@@ -395,6 +398,11 @@ public class TrackController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    public void sliderListener() {
+
     }
 
     public void setViewLabel(String text) {
