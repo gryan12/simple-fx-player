@@ -67,12 +67,17 @@ public class DataStore {
     }
 
     public void setCurrentToTotal() {
-        currentTrackList.addAll(trackList);
+        currentTrackList = FXCollections.observableArrayList(trackList);
     }
 
-    public void remakeCurrent(List<Track> list) {
+    public void setCurrent(List<Track> list) {
         currentTrackList = FXCollections.observableArrayList(list);
     }
+
+
+//    public void remakeCurrent(List<Track> list) {
+//        currentTrackList = FXCollections.observableArrayList(list);
+//    }
 
 
     public  ObservableList<Track> getTracks() {

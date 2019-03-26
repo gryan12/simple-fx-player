@@ -76,6 +76,9 @@ public void initialize() {
         this.trackScene = trackScene;
     }
 
+
+
+    //============functions for moving between different view of tracks ===================
     @FXML
     public void openTrackScene(ActionEvent ae) {
         Stage primaryStage = (Stage)((Node)ae.getSource()).getScene().getWindow();
@@ -86,8 +89,7 @@ public void initialize() {
     @FXML
     public void goToAllTracks() {
         System.out.println("all tracks called");
-
-        DataStore.getInstance().remakeCurrent(DataStore.getInstance().getTracks());
+        DataStore.getInstance().setCurrent(DataStore.getInstance().getTracks());
         trackController.setViewTracks(DataStore.getInstance().getCurrentTracks());
         System.out.println("size current: " + DataStore.getInstance().getCurrentTracks().size());
         System.out.println("\n size total: " + DataStore.getInstance().getTracks().size());
@@ -99,21 +101,23 @@ public void initialize() {
     @FXML
     public void openAlbum(Album album) {
 
-
+        DataStore.getInstance().setCurrent(album.getTrackList());
+        trackController.setViewTracks(DataStore.getInstance().getCurrentTracks());
         Stage primaryStage = (Stage)((Node)mainPane).getScene().getWindow();
         primaryStage.setScene(trackScene);
-        DataStore.getInstance().setCurrentTracks(album.getTrackList());
-        trackController.setViewTracks(DataStore.getInstance().getCurrentTracks());
-
     }
 
     @FXML
     public void openAlbum() {
         Album album = albumListView.getSelectionModel().getSelectedItem();
-        trackController.setViewTracks(album.getTrackList());
+        DataStore.getInstance().setCurrent(album.getTrackList());
+        trackController.setViewTracks(DataStore.getInstance().getCurrentTracks());
         Stage primaryStage = (Stage)((Node)mainPane).getScene().getWindow();
         primaryStage.setScene(trackScene);
     }
+
+//=====================
+
 
 
     public void setUpAlbumView() {

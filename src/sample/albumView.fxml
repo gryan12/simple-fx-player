@@ -14,11 +14,11 @@
             <VBox alignment="CENTER" layoutY="30.0" prefHeight="543.0" prefWidth="143.0" style="-fx-spacing: 10; -fx-border-insets: 10;">
                <children>
                   <Label text="views" />
-                  <Button mnemonicParsing="false" text="Playlists" />
+                  <!--<Button mnemonicParsing="false" text="Playlists" />-->
                   <Button mnemonicParsing="false" text="Albums"/>
                   <Button mnemonicParsing="false" text="All Tracks" onAction="#goToAllTracks"/>
                   <Button mnemonicParsing="false" text="Go To Album" onAction="#openAlbum"/>
-                  <Button mnemonicParsing="false" text="Button" />
+                  <!--<Button mnemonicParsing="false" text="Button" />-->
                   <!--<Button onAction="#textPrev" text="test prev" />-->
                </children>
             </VBox>
@@ -87,7 +87,7 @@
                      <!--<Button onAction="#testLoad" text="test load" />-->
                   </items>
                </ToolBar>
-               <Label fx:id="currentSongLabel" text="all tracks" />
+               <!--<Label fx:id="currentSongLabel" text="all tracks" />-->
             </VBox>
          </children>
       </VBox>
@@ -95,8 +95,8 @@
    <center>
       <!--<children>-->
       <AnchorPane fx:id="centrePane">
-         <Label fx:id="albumViewLabel" alignment="CENTER" prefWidth="175.0" text="Default window: all loaded tracks"
-                AnchorPane.topAnchor="0"/>
+         <Label fx:id="albumViewLabel" alignment="CENTER" prefWidth="175.0" text="All Albums"
+                AnchorPane.topAnchor="0" AnchorPane.rightAnchor="300"/>
          <ListView fx:id="albumListView" layoutX="2.0" layoutY="60.0" prefHeight="439.0" prefWidth="548.0" BorderPane.alignment="CENTER"
                    AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="20"/>
       </AnchorPane>

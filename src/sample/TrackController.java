@@ -116,6 +116,21 @@ public class TrackController {
         trackListView.getItems().setAll(trackList);
     }
 
+
+    //====functions to change the view of tracks====
+    @FXML
+   public void changeTrackView(List<Track> list) {
+       DataStore.getInstance().setCurrent(list);
+       setViewTracks(DataStore.getInstance().getCurrentTracks());
+   }
+
+   @FXML
+   public void viewAllTracks() {
+        changeTrackView(DataStore.getInstance().getTracks());
+   }
+
+    //=========
+
     public void setAlbumController(AlbumController albumController) {
         this.albumController = albumController;
     }
@@ -337,6 +352,7 @@ public class TrackController {
         }
 
 
+        //funfctions to handle music player controls =============== many unused need to cleanup
     @FXML
     public void testPlay() {
         player.populateList(trackListView.getItems());
@@ -404,6 +420,7 @@ public class TrackController {
 
     }
 
+    //======================
 
     @FXML
     public void changeToAlbumView() {
