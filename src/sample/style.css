@@ -9,7 +9,7 @@
 .button {
     -fx-background-color: transparent;
     -fx-text-fill: white;
-
+    -fx-pref-width: 100px;
 
 
 
@@ -59,20 +59,6 @@
 }
 
 
-
-
-/*
-=========Left
-*/
-.leftPane Label {
-    -fx-text-fill: white;
-    -fx-font-size: 12pt;
-    -fx-font-weight:bold;
-    -fx-underline:true;
-}
-
-
-
 /*
 =========Center
 */
@@ -98,6 +84,23 @@
  -fx-background-color: #1a66ff;
   -fx-text-fill: white;
 }
+
+
+/*
+=========Left
+*/
+.leftPane Label {
+    -fx-text-fill: white;
+    -fx-font-size: 12pt;
+    -fx-font-weight:bold;
+    -fx-underline:true;
+}
+
+.leftPane Button {
+    -fx-pref-width: 200px;
+}
+
+
 
 
 /*

@@ -165,8 +165,8 @@ public class TrackController {
             public void changed(ObservableValue<? extends Track> observable, Track oldValue, Track newValue) {
                 if (newValue != null) {
                     Track track = trackListView.getSelectionModel().getSelectedItem();
-                    rightDetailsArea.setText("Track: " + track.getTitle()
-                            + "\n" + "Duration: " + track.getDuration().toString());
+//                    rightDetailsArea.setText("Name: " + track.getTitle()
+//                            + "\n\n" + "Duration: " + track.getDuration().toString());
                 }
             }
         });
@@ -193,10 +193,19 @@ public class TrackController {
                                 cell.setContextMenu(listContextMenu);
                             }
                         });
+                cell.hoverProperty().addListener(((observable, wasHovered, isNowHovered) -> {
+                    if (isNowHovered && !cell.isEmpty()) {
+                        Track track = cell.getItem();
+                        rightDetailsArea.setText("Name: " + track.getTitle()
+                                + "\n\n" + "Duration: " + track.getDuration().toString());
+                    }
+                }));
                 return cell;
             }
         });
     }
+
+
 
     public void setAlbumScene(Scene scene) {
         albumScene = scene;
@@ -269,13 +278,7 @@ public class TrackController {
         FileChooser chooser = new FileChooser();
         chooser.setInitialDirectory(new File("./"));
         File file = chooser.showOpenDialog(mainPane.getScene().getWindow());
-
-        String[] trackDetails = file.toString().split("-");
-        Duration duration = new Duration();
-        duration = new Duration(duration.extractDuration(file));
-        Track newTrack = new Track(trackDetails[3], duration, file);
-
-        DataStore.getInstance().getTracks().add(newTrack);
+        FileManager.getInstance().loadTrack(file);
     }
 
 
@@ -287,45 +290,46 @@ public class TrackController {
         FileNameExtensionFilter filter = new FileNameExtensionFilter("wav files", "*.wav");
         chooser.setInitialDirectory(new File("./"));
         File file = chooser.showDialog(mainPane.getScene().getWindow());
-        if (file != null) {
-            System.out.println(file.canRead());
-            Album newAlbum;
-            if (file.toString().contains("-")) {
-                String[] albumDetails = file.toString().split("-");
-                newAlbum = new Album(albumDetails[0], albumDetails[1]);
-            } else {
-                newAlbum = new Album(file.toString(), file.toString());
-            }
-
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(file.toPath())) {
-                for (Path streamPath : stream) {
-                    String[] details = streamPath.toString().split("-");
-                    String trackName = details[details.length - 1];
-                    Duration duration = new Duration();
-                    AudioFormat format;
-                    try (AudioInputStream streaminput = AudioSystem.getAudioInputStream(streamPath.toFile())) {
-                        format = streaminput.getFormat();
-                        long size = streamPath.toFile().length();
-                        int frameSize = format.getFrameSize();
-                        float frameRate = format.getFrameRate();
-                        float totalLength = (size / (frameSize * frameRate));
-                        duration = new Duration((int) totalLength);
-                        Track newTrack = new Track(trackName, duration, streamPath.toFile());
-                        newAlbum.addToAlbum(newTrack);
-                        DataStore.getInstance().addTrack(newTrack);
-                        for (String detail : details) {
-                            System.out.println("\t" + detail);
-                        }
-                    }
-                }
-                DataStore.getInstance().addAlbum(newAlbum);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("exiting chooser");
-            return;
-        }
+        FileManager.getInstance().loadAlbum(file);
+//        if (file != null) {
+//            System.out.println(file.canRead());
+//            Album newAlbum;
+//            if (file.toString().contains("-")) {
+//                String[] albumDetails = file.toString().split("-");
+//                newAlbum = new Album(albumDetails[0], albumDetails[1]);
+//            } else {
+//                newAlbum = new Album(file.toString(), file.toString());
+//            }
+//
+//            try (DirectoryStream<Path> stream = Files.newDirectoryStream(file.toPath())) {
+//                for (Path streamPath : stream) {
+//                    String[] details = streamPath.toString().split("-");
+//                    String trackName = details[details.length - 1];
+//                    Duration duration = new Duration();
+//                    AudioFormat format;
+//                    try (AudioInputStream streaminput = AudioSystem.getAudioInputStream(streamPath.toFile())) {
+//                        format = streaminput.getFormat();
+//                        long size = streamPath.toFile().length();
+//                        int frameSize = format.getFrameSize();
+//                        float frameRate = format.getFrameRate();
+//                        float totalLength = (size / (frameSize * frameRate));
+//                        duration = new Duration((int) totalLength);
+//                        Track newTrack = new Track(trackName, duration, streamPath.toFile());
+//                        newAlbum.addToAlbum(newTrack);
+//                        DataStore.getInstance().addTrack(newTrack);
+//                        for (String detail : details) {
+//                            System.out.println("\t" + detail);
+//                        }
+//                    }
+//                }
+//                DataStore.getInstance().addAlbum(newAlbum);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        } else {
+//            System.out.println("exiting chooser");
+//            return;
+//        }
     }
 
 
@@ -362,7 +366,11 @@ public class TrackController {
     @FXML
     public void handlePlayerControlls(ActionEvent ae) {
         if (ae.getSource() == play) {
-            contextPlay();
+            if (!player.shouldResume()) {
+                contextPlay();
+            } else {
+                player.resume();
+            }
         } else if (ae.getSource() == pause) {
             System.out.println("pause");
             player.pause();

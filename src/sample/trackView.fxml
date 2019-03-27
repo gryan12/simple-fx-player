@@ -12,22 +12,19 @@
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="638.0" prefWidth="846.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.172-ea" fx:controller="sample.TrackController">
+<BorderPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="638.0" prefWidth="846.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.TrackController">
    <left>
-      <AnchorPane prefHeight="573.0" prefWidth="129.0" BorderPane.alignment="CENTER" styleClass="leftPane">
+      <AnchorPane prefHeight="573.0" prefWidth="129.0" styleClass="leftPane" BorderPane.alignment="CENTER">
          <children>
-            <VBox alignment="CENTER" layoutY="30.0" prefHeight="543.0" prefWidth="143.0" style="-fx-spacing: 10; -fx-border-insets: 10;">
+            <VBox alignment="CENTER" layoutX="-7.0" layoutY="55.0" prefHeight="227.0" prefWidth="143.0" style="-fx-spacing: 10; -fx-border-insets: 10;">
                <children>
                    <Label text="Navigation" />
                   <!--<Button mnemonicParsing="false" text="Playlists" />-->
-                  <Button mnemonicParsing="false" text="Albums" onAction="#openAlbumScene"/>
-                  <Button mnemonicParsing="false" text="All Tracks" onAction="#viewAllTracks"/>
+                  <Button mnemonicParsing="false" onAction="#openAlbumScene" text="Albums" />
+                  <Button mnemonicParsing="false" onAction="#viewAllTracks" text="All Tracks" />
                   <!--<Button mnemonicParsing="false" text="Button" />-->
                   <!--<Button mnemonicParsing="false" text="Button" />-->
                    <!--<Button onAction="#textPrev" text="test prev" />-->
@@ -38,17 +35,17 @@
    </left>
    <right>
       <AnchorPane prefHeight="511.0" prefWidth="152.0" BorderPane.alignment="CENTER">
-          <VBox>
-              <TextArea fx:id="rightDetailsArea" prefWidth="152" BorderPane.alignment="CENTER" />
+          <VBox layoutY="32.0">
+              <TextArea fx:id="rightDetailsArea" prefWidth="152" wrapText="true" BorderPane.alignment="CENTER" />
           </VBox>
       </AnchorPane>
 
    </right>
    <bottom>
-      <VBox prefHeight="62.0" prefWidth="600.0" BorderPane.alignment="CENTER" styleClass="controlls">
+      <VBox prefHeight="62.0" prefWidth="600.0" styleClass="controlls" BorderPane.alignment="CENTER">
          <children>
              <HBox alignment="CENTER">
-                 <Label text="" fx:id="currentTrackLabel" alignment="CENTER"/>
+                 <Label fx:id="currentTrackLabel" alignment="CENTER" text="" />
              </HBox>
             <HBox fx:id="controllBox" alignment="CENTER" prefHeight="59.0" prefWidth="600.0">
                <children>
@@ -68,7 +65,7 @@
       </VBox>
    </bottom>
    <top>
-      <VBox prefHeight="65.0" prefWidth="846.0" BorderPane.alignment="CENTER" styleClass="header-region">
+      <VBox prefHeight="65.0" prefWidth="846.0" styleClass="header-region" BorderPane.alignment="CENTER">
          <children>
             <MenuBar>
               <menus>
@@ -112,10 +109,9 @@
          <!--<children>-->
             <AnchorPane fx:id="centrePane" styleClass="trackView">
                 <!--<HBox alignment="CENTER" AnchorPane.leftAnchor="380">-->
-                    <Label fx:id="viewLabel" alignment="CENTER" text="All Tracks" AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0" maxWidth="-Infinity"/>
+                    <Label fx:id="viewLabel" alignment="CENTER" layoutY="6.0" maxWidth="-Infinity" text="All Tracks" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
                 <!--</HBox>-->
-                <ListView fx:id="trackListView" layoutX="2.0" layoutY="60.0" prefHeight="439.0" prefWidth="548.0" BorderPane.alignment="CENTER"
-                    AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="20"/>
+                <ListView fx:id="trackListView" layoutX="2.0" layoutY="31.0" prefHeight="480.0" prefWidth="551.0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="31.0" BorderPane.alignment="CENTER" />
             </AnchorPane>
 
    </center>
