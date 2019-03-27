@@ -63,7 +63,7 @@
 =========Center
 */
 
-.trackView Label {
+.centerView Label {
        -fx-font-size: 14pt;
        -fx-font-family: "Tahoma";
        -fx-text-fill: white;
@@ -83,6 +83,11 @@
 .list-cell:filled:hover {
  -fx-background-color: #1a66ff;
   -fx-text-fill: white;
+}
+
+.centerLabel Label {
+    -fx-text-fill: white;
+    -fx-font-size: 14pt;
 }
 
 

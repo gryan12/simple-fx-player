@@ -363,6 +363,7 @@ public class TrackController {
 
     }
 
+    //again change label to auto updating, placeholder currently
     @FXML
     public void handlePlayerControlls(ActionEvent ae) {
         if (ae.getSource() == play) {
@@ -370,6 +371,7 @@ public class TrackController {
                 contextPlay();
             } else {
                 player.resume();
+                setcurrentTrackLabel(player.getToPlay().get(player.getCurrentIndex()));
             }
         } else if (ae.getSource() == pause) {
             System.out.println("pause");
@@ -377,9 +379,11 @@ public class TrackController {
         } else if (ae.getSource() == next) {
             System.out.println("next");
             player.next();
+            setcurrentTrackLabel(player.getToPlay().get(player.getCurrentIndex()+1));
         } else if (ae.getSource() == prev) {
             System.out.println("prev");
             player.prev();
+            setcurrentTrackLabel(player.getToPlay().get(player.getCurrentIndex()-1));
         }
     }
 

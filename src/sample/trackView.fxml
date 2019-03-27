@@ -44,7 +44,7 @@
    <bottom>
       <VBox prefHeight="62.0" prefWidth="600.0" styleClass="controlls" BorderPane.alignment="CENTER">
          <children>
-             <HBox alignment="CENTER">
+             <HBox alignment="CENTER" styleClass="centerLabel">
                  <Label fx:id="currentTrackLabel" alignment="CENTER" text="" />
              </HBox>
             <HBox fx:id="controllBox" alignment="CENTER" prefHeight="59.0" prefWidth="600.0">
@@ -107,7 +107,7 @@
    </top>
    <center>
          <!--<children>-->
-            <AnchorPane fx:id="centrePane" styleClass="trackView">
+            <AnchorPane fx:id="centrePane" styleClass="centerView">
                 <!--<HBox alignment="CENTER" AnchorPane.leftAnchor="380">-->
                     <Label fx:id="viewLabel" alignment="CENTER" layoutY="6.0" maxWidth="-Infinity" text="All Tracks" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
                 <!--</HBox>-->
