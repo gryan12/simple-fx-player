@@ -13,60 +13,65 @@ import java.util.concurrent.*;
 
 public class AutoPlayer  {
 
-    private boolean onRepeat = true;
-    private boolean onShuffle = false;
-    private List<Track> toPlay;
-    private int currentIndex = 0;
-    private boolean stop = false;
+    private static boolean onRepeat = true;
+    private static boolean onShuffle = false;
+    private static List<Track> toPlay;
+    private static int currentIndex = 0;
+    private static boolean stop = false;
     private static Thread autoPlayerThread;
     private static corePlayer player = new corePlayer();
-    private boolean resuming = false;
-    private Task<?> lastTask = null;
+    private static boolean resuming = false;
+    private static Task<?> lastTask = null;
+    ExecutorService service = Executors.newSingleThreadExecutor();
 
 
-    private void runTask(Task<?> task) {
+    public static void autoPlay() {
+    }
+
+    private static void runTask(Task<?> task) {
         registerTask(task);
         new Thread(task).start();
     }
 
-    private synchronized void registerTask(Task<?> task) {
+    private static synchronized void registerTask(Task<?> task) {
         if (lastTask != null) {
             lastTask.cancel(true);
         }
         lastTask = task;
     }
 
-    private Task<?> generatePlayTask() {
+    //does not work, retry
+    private static Task<?> generatePlayTask() {
         Task newTask = new Task() {
             @Override
             protected Object call() throws Exception {
                 player.play(toPlay.get(currentIndex).getFile());
-                currentIndex++;
-                if (player.startNext && currentIndex < (toPlay.size() - 1)) {
-                    generatePlayTask();
-                }
+//                currentIndex++;
+//                if (player.startNext && currentIndex < (toPlay.size() - 1) && player.clip.getFramePosition() == player.clip.getFrameLength()) {
+//                    next();
+//                }
                 return null;
             }
         };
         return newTask;
     }
 
-    private Task<?> generateNewPlayTask() {
+    private static Task<?> generateNewPlayTask() {
         Task newTask = new Task() {
             @Override
             protected Object call() throws Exception {
                 player.pause();
                 player.play(toPlay.get(currentIndex).getFile());
-                currentIndex++;
-                if (player.startNext && currentIndex < (toPlay.size() - 1)) {
-                    generatePlayTask();
-                }
+//                currentIndex++;
+//                if (player.startNext && currentIndex < (toPlay.size() - 1) && player.clip.getFramePosition() == player.clip.getFrameLength()) {
+//                    next();
+//                }
                 return null;
             }
         };
         return newTask;
     }
-    private Task<?> generatePauseTask() {
+    private static Task<?> generatePauseTask() {
         Task newTask = new Task() {
             @Override
             protected Object call() throws Exception {
@@ -78,7 +83,7 @@ public class AutoPlayer  {
     }
 
 
-    private Task<?> generateNextTask() {
+    private static Task<?> generateNextTask() {
         Task newTask = new Task() {
             @Override
             protected Object call() throws Exception {
@@ -91,7 +96,7 @@ public class AutoPlayer  {
         return newTask;
     }
 
-    private Task<?> generatePrevTask() {
+    private static Task<?> generatePrevTask() {
         Task newTask = new Task() {
             @Override
             protected Object call() throws Exception {
@@ -104,7 +109,7 @@ public class AutoPlayer  {
         return newTask;
     }
 
-    public void next() {
+    public static void next() {
         if (currentIndex == toPlay.size()-1) {
             System.out.println("already at end of list");
             return;
@@ -112,25 +117,25 @@ public class AutoPlayer  {
         runTask(generateNextTask());
     }
 
-    public void play() {
+    public static void play() {
         runTask(generatePlayTask());
     }
 
-    public void newPlay() {
+    public static void newPlay() {
         if (player.currentFile == null) {
             runTask(generatePlayTask());
         } else {
             runTask(generateNewPlayTask());
         }
     }
-    public void resume() {
+    public static void resume() {
         if (player.isPlaying) {
             System.out.println("already playing");
             return;
         }
         runTask(generatePlayTask());
     }
-    public void pause() {
+    public static void pause() {
         if (player.isPaused) {
             System.out.println("already paused");
             return;
@@ -138,7 +143,7 @@ public class AutoPlayer  {
         runTask(generatePauseTask());
     }
 
-    public void prev() {
+    public static void prev() {
         if (currentIndex == 0) {
             System.out.println("already at beginning of list");
             return;
@@ -146,6 +151,7 @@ public class AutoPlayer  {
         runTask(generatePrevTask());
     }
 
+//================================================================================================================
     public void populateList(List<Track> trackList) {
         if (!onShuffle) {
             int index =0;
@@ -167,6 +173,11 @@ public class AutoPlayer  {
    }
 
 
+
+
+public static void incrementCurrent() {
+        currentIndex++;
+}
     public List<Track> getToPlay() {
         return toPlay;
     }
@@ -190,6 +201,18 @@ public class AutoPlayer  {
     public void setClipPosition(int x) {
         player.clip.setFramePosition(x);
     }
+
+
+    public static void listenForAutoPlay(Clip clip) {
+        clip.addLineListener(event -> {
+            if (event.getType() == LineEvent.Type.STOP && clip.getFramePosition() == clip.getFrameLength()) {
+                if (currentIndex < toPlay.size()-1) {
+                    next();
+                }
+            }
+        });
+    }
+
 
     private static class corePlayer {
         private static corePlayer instance = new corePlayer();
@@ -234,6 +257,7 @@ public class AutoPlayer  {
                     isPlaying = true;
                     isPaused = false;
                     clip = AudioSystem.getClip();
+                    listenForAutoPlay(clip);
                     listenForFileEnd(clip);
                     clip.open(audioIn);
                     System.out.println("prestart");
@@ -274,7 +298,6 @@ public class AutoPlayer  {
         private void listenForFileEnd(Clip clip) {
             clip.addLineListener(event -> {
                 if (event.getType() == LineEvent.Type.STOP){
-                    startNext = true;
                     waitOnBarrier();
                 }
             });
@@ -291,6 +314,7 @@ public class AutoPlayer  {
         private void waitForSoundEnd() {
             waitOnBarrier();
         }
+
 
 
     }
