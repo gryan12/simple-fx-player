@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
+
 public class AutoPlayer  {
 
     private static boolean onRepeat = true;
@@ -22,12 +23,13 @@ public class AutoPlayer  {
     private static corePlayer player = new corePlayer();
     private static boolean resuming = false;
     private static Task<?> lastTask = null;
-    ExecutorService service = Executors.newSingleThreadExecutor();
+    private static MyChangeListener listener;
 
 
-    public static void autoPlay() {
-    }
 
+
+
+//========================cancel any player-related task that is active when another one is called==========
     private static void runTask(Task<?> task) {
         registerTask(task);
         new Thread(task).start();
@@ -40,7 +42,7 @@ public class AutoPlayer  {
         lastTask = task;
     }
 
-    //does not work, retry
+    //================= generate player-related tasks========================
     private static Task<?> generatePlayTask() {
         Task newTask = new Task() {
             @Override
@@ -89,6 +91,7 @@ public class AutoPlayer  {
             protected Object call() throws Exception {
                 player.pause();
                 currentIndex++;
+                updateListener();
                 player.play(toPlay.get(currentIndex).getFile());
                 return null;
             }
@@ -102,6 +105,7 @@ public class AutoPlayer  {
             protected Object call() throws Exception {
                 player.pause();
                 currentIndex--;
+                updateListener();
                 player.play(toPlay.get(currentIndex).getFile());
                 return null;
             }
@@ -109,15 +113,10 @@ public class AutoPlayer  {
         return newTask;
     }
 
-    public static void next() {
-        if (currentIndex == toPlay.size()-1) {
-            System.out.println("already at end of list");
-            return;
-        }
-        runTask(generateNextTask());
-    }
+    //=============the controller commands ==================
 
     public static void play() {
+
         runTask(generatePlayTask());
     }
 
@@ -141,8 +140,17 @@ public class AutoPlayer  {
             return;
         }
         runTask(generatePauseTask());
+
     }
 
+    public static void next() {
+        if (currentIndex == toPlay.size()-1) {
+            System.out.println("already at end of list");
+            return;
+        }
+        runTask(generateNextTask());
+
+    }
     public static void prev() {
         if (currentIndex == 0) {
             System.out.println("already at beginning of list");
@@ -178,6 +186,14 @@ public class AutoPlayer  {
 public static void incrementCurrent() {
         currentIndex++;
 }
+
+public static void updateListener() {
+        listener.onChangeHappened();
+}
+
+
+
+//======setters and getters===============================
     public List<Track> getToPlay() {
         return toPlay;
     }
@@ -194,6 +210,7 @@ public static void incrementCurrent() {
         this.currentIndex = currentIndex;
     }
 
+
     //for slider functionality
     public Clip getClip() {
         return player.clip;
@@ -203,7 +220,16 @@ public static void incrementCurrent() {
     }
 
 
-    public static void listenForAutoPlay(Clip clip) {
+    public MyChangeListener getListener() {
+        return listener;
+    }
+
+    public void setListener(MyChangeListener listener) {
+        this.listener = listener;
+    }
+
+    //listener function that implements autoplay feature.
+    private static void listenForAutoPlay(Clip clip) {
         clip.addLineListener(event -> {
             if (event.getType() == LineEvent.Type.STOP && clip.getFramePosition() == clip.getFrameLength()) {
                 if (currentIndex < toPlay.size()-1) {
@@ -224,18 +250,6 @@ public static void incrementCurrent() {
         private static Clip clip;
         private static AudioInputStream audioIn;
         private static boolean startNext = false;
-
-        private void printStatus() {
-            System.out.println("is playing: " + isPlaying
-                + "\ncurrent file: " + currentFile.getName().toString()
-                + "\npaused position: " + pausedPos
-                + "\nis paused: " + isPaused
-                + "\nbarrier status@: " + barrier.getNumberWaiting()
-                + "\nclip status: " + clip.isActive()
-                + "\nclip position: " + clip.getFramePosition()
-                + "\nstream status: " + audioIn.getClass().toString());
-        }
-
 
 
         public void play(File file) {
@@ -269,7 +283,6 @@ public static void incrementCurrent() {
                 }
             }
         }
-
 
         private void flush() {
             currentFile = null;
@@ -319,10 +332,9 @@ public static void incrementCurrent() {
 
     }
 
-
-
-
-
+    public interface MyChangeListener {
+        public void onChangeHappened();
+    }
 
 
 

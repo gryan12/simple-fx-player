@@ -85,6 +85,11 @@ public class FileManager {
 
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(file.toPath())) {
                 for (Path streamPath : stream) {
+
+
+
+
+                    
                     String[] details = streamPath.toString().split("-");
                     String trackName = details[details.length - 1];
                     Duration duration = new Duration();

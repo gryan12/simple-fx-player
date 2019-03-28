@@ -43,71 +43,73 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class TrackController {
+public class TrackController implements AutoPlayer.MyChangeListener {
     //for testing
     public Track currentSong;
     public File currentFile;
     public static Thread musicPlayerThread;
-    private AutoPlayer player = new AutoPlayer();
+    private AutoPlayer player;
     private AlbumController albumController;
-
     private Scene albumScene;
-
-
     @FXML
     private ObservableList<Track> currentTrackList = FXCollections.observableArrayList();
 
     @FXML
-    BorderPane mainPane;
+    private BorderPane mainPane;
+    @FXML
+    private Label currentSongLabel;
+    @FXML
+    private TextArea rightDetailsArea;
+    @FXML
+    private Button play;
+    @FXML
+    private Button pause;
+    @FXML
+    private Button next;
+    @FXML
+    private Button prev;
+    @FXML
+    private ListView<Track> trackListView;
+    @FXML
+    private Button textPrev;
+    @FXML
+    private AnchorPane centrePane;
+    @FXML
+    private Button testPause;
+    @FXML
+    private Button testResume;
+    @FXML
+    private Button testPrev;
+    @FXML
+    private Label currentTrackLabel;
+    @FXML
+    private Label viewLabel;
+    @FXML
+    private ContextMenu listContextMenu;
+    @FXML
+    private Slider slider;
+
+
+    public TrackController() {
+        player = new AutoPlayer();
+        player.setListener(this);
+    }
+
+
+    @Override
+    public void onChangeHappened() {
+        setcurrentTrackLabel(player.getToPlay().get(player.getCurrentIndex()));
+    }
+
+
+
+
+
+
+
+
 
     @FXML
-    Label currentSongLabel;
-
-    @FXML
-    TextArea rightDetailsArea;
-
-    @FXML
-    Button play;
-
-    @FXML
-    Button pause;
-
-    @FXML
-    Button next;
-
-    @FXML
-    Button prev;
-
-    @FXML
-    ListView<Track> trackListView;
-
-    @FXML
-    Button textPrev;
-
-    @FXML
-    AnchorPane centrePane;
-
-    @FXML
-    Button testPause;
-
-    @FXML
-    Button testResume;
-
-    @FXML
-    Button testPrev;
-
-    @FXML
-    Label currentTrackLabel;
-
-    @FXML
-    Label viewLabel;
-
-    @FXML
-    ContextMenu listContextMenu;
-
-    @FXML
-    public Slider slider;
-
     public void initialize() {
     }
 
@@ -120,12 +122,17 @@ public class TrackController {
     }
 
 
+
+
+
+
+    //====functions to change the view of tracks====
+
     public void setViewTracks(List<Track> trackList) {
         trackListView.getItems().setAll(trackList);
     }
 
 
-    //====functions to change the view of tracks====
     @FXML
    public void changeTrackView(List<Track> list) {
        DataStore.getInstance().setCurrent(list);
@@ -423,4 +430,9 @@ public class TrackController {
     public void setcurrentTrackLabel(Track track) {
        currentTrackLabel.setText(track.getTitle());
     }
+
+
+
+
+
 }
