@@ -9,6 +9,7 @@ Date: 01/11/2018
  */
 import javafx.scene.image.Image;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -18,26 +19,28 @@ public class Album implements Serializable {
     private String name;
     private String artist;
     private ArrayList<Track> trackList;
-//    private Image albumArtwork;
+    private File albumArtwork;
     private long serialVersionUID = 7L;
 
     public Album() {
         this.name = "no name";
         this.artist = "unknown artist";
         this.trackList = new ArrayList<>();
-//        this.albumArtwork = null;
+        this.albumArtwork = null;
     }
 
     public Album(String artist, String name, ArrayList<Track> trackList) {
         this.name = name;
         this.artist = artist;
         this.trackList = trackList;
+        this.albumArtwork=null;
     }
     
     public Album(String artist, String name) {
         this.name = name;
         this.artist = artist;
         this.trackList = new ArrayList<>();
+        this.albumArtwork = null;
     }
 
 
@@ -68,13 +71,13 @@ public class Album implements Serializable {
         return artist;
     }
 
-//    public Image getAlbumArtwork() {
-//        return albumArtwork;
-//    }
+    public File getAlbumArtwork() {
+        return albumArtwork;
+    }
 
-//    public void setAlbumArtwork(Image albumArtwork) {
-//        this.albumArtwork = albumArtwork;
-//    }
+    public void setAlbumArtwork(File albumArtwork) {
+        this.albumArtwork = albumArtwork;
+    }
 
     public ArrayList<Track> getTrackList()
     {

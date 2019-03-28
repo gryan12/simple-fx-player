@@ -10,6 +10,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -35,6 +37,7 @@ public class AlbumController {
     private Scene trackScene;
     private AutoPlayer player;
     private TrackController trackController;
+    FileManager manager;
 
 
     @FXML
@@ -65,7 +68,16 @@ public class AlbumController {
     @FXML
     ContextMenu albumListContextMenu;
 
+    @FXML
+    ImageView tesdddddd;
+//    @FXML
+//    ImageView artworkImageView;
+
 public void initialize() {
+    }
+
+    public AlbumController() {
+        manager = new FileManager();
     }
 
     public void setTrackController(TrackController trackController) {
@@ -148,6 +160,7 @@ public void initialize() {
                     Album album = albumListView.getSelectionModel().getSelectedItem();
                     rightDetailsArea.setText("Artist: " + album.getArtist()
                             + "\n" + "Album name: " + album.getName());
+                    loadAlbumArtwork(album);
                 }
             }
         });
@@ -181,18 +194,13 @@ public void initialize() {
     }
 
     @FXML
-    public void loadSong() {
-        FileChooser chooser = new FileChooser();
+    public void loadSngleTrack() {
         FileNameExtensionFilter filter = new FileNameExtensionFilter("wav files", "*.wav");
+        FileChooser chooser = new FileChooser();
         chooser.setInitialDirectory(new File("./"));
-
-        try {
-            File newFile = chooser.showOpenDialog(mainPane.getScene().getWindow());
-
-            Track newTrack = FileManager.getInstance().loadTrack(newFile);
-            DataStore.getInstance().addTrack(newTrack);
-        } catch(Exception e) {
-            e.printStackTrace();
+        File file = chooser.showOpenDialog(mainPane.getScene().getWindow());
+        if (file != null) {
+            manager.loadTrack(file);
         }
     }
 
@@ -203,41 +211,7 @@ public void initialize() {
         chooser.setInitialDirectory(new File("./"));
         File file = chooser.showDialog(mainPane.getScene().getWindow());
         if (file != null) {
-
-
-            System.out.println(file.canRead());
-            Album newAlbum;
-            if (file.toString().contains("-")) {
-                String[] albumDetails = file.toString().split("-");
-                newAlbum = new Album(albumDetails[0], albumDetails[1]);
-            } else {
-                newAlbum = new Album(file.toString(), file.toString());
-            }
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(file.toPath())) {
-                for (Path streamPath : stream) {
-                    String[] details = streamPath.toString().split("-");
-                    String trackName = details[4];
-                    Duration duration = new Duration();
-                    AudioFormat format;
-                    try (AudioInputStream streaminput = AudioSystem.getAudioInputStream(streamPath.toFile())) {
-                        format = streaminput.getFormat();
-                        long size = streamPath.toFile().length();
-                        int frameSize = format.getFrameSize();
-                        float frameRate = format.getFrameRate();
-                        float totalLength = (size / (frameSize * frameRate));
-                        duration = new Duration((int) totalLength);
-                        Track newTrack = new Track(trackName, duration, streamPath.toFile());
-                        newAlbum.addToAlbum(newTrack);
-                        DataStore.getInstance().addTrack(newTrack);
-                        for (String detail : details) {
-                            System.out.println("\t" + detail);
-                        }
-                    }
-                }
-                DataStore.getInstance().addAlbum(newAlbum);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            manager.loadAlbum(file);
         } else {
             System.out.println("exiting chooser");
             return;
@@ -264,6 +238,13 @@ public void initialize() {
     public AutoPlayer getPlayer() {
         return player;
     }
+
+    public void loadAlbumArtwork(Album album) {
+        System.out.println("this is being passed: " + album.getAlbumArtwork().getName());
+//        Image img = new Image("/yunosuke-pathos/cover.jpg");
+        tesdddddd = new ImageView(getClass().getResource("/yunosuke-pathos/cover.jpg").toExternalForm());
+    }
+
 
     public void setPlayer(AutoPlayer player) {
         this.player = player;

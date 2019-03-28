@@ -22,58 +22,13 @@ import java.util.regex.Pattern;
 
 public class FileManager {
     private Pattern regex = Pattern.compile( "([^\\s]+(\\.(?i)(wav|mp3))$)");
-    private static FileManager instance;
 
 
+    public FileManager() {
 
-    private FileManager() {
-        instance = new FileManager();
     }
-
-    public static FileManager getInstance() {
-        return instance;
-    }
-
-//    public Album directoryToAlbum(Path path) {
-//        Album newAlbum = new Album();
-//        String[] albumDetails = path.toString().split("-");
-//        if (path.toFile().isDirectory()) {
-//            List<Path> pathList = new ArrayList<>();
-//            try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
-//                for (Path entry: stream) {
-//                    pathList.add(entry);
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//
-//            for (Path newPath: pathList) {
-//                if (newPath.toFile().canRead()) {
-//                    String[] details = newPath.toString().split("-");
-//                    String trackName = details[3];
-//                    Duration duration = new Duration();
-//                    AudioFormat format;
-//                    try (AudioInputStream stream = AudioSystem.getAudioInputStream(newPath.toFile())) {
-//                        format = stream.getFormat();
-//                        long size = newPath.toFile().length();
-//                        int frameSize = format.getFrameSize();
-//                        float frameRate = format.getFrameRate();
-//                        float totalLength = (size / (frameSize*frameRate));
-//                        duration = new Duration((int)totalLength);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                    newAlbum.addToAlbum(new Track(trackName, duration, newPath.toFile()));
-//
-//                }
-//            }
-//        }
-//        return newAlbum;
-//    }
-
 
     public void loadAlbum(File file) {
-        if (file != null) {
             System.out.println(file.canRead());
             Album newAlbum;
             if (file.toString().contains("-")) {
@@ -87,55 +42,61 @@ public class FileManager {
                 for (Path streamPath : stream) {
 
 
-
-
-                    
-                    String[] details = streamPath.toString().split("-");
-                    String trackName = details[details.length - 1];
-                    Duration duration = new Duration();
-                    AudioFormat format;
-                    try (AudioInputStream streaminput = AudioSystem.getAudioInputStream(streamPath.toFile())) {
-                        format = streaminput.getFormat();
-                        long size = streamPath.toFile().length();
-                        int frameSize = format.getFrameSize();
-                        float frameRate = format.getFrameRate();
-                        float totalLength = (size / (frameSize * frameRate));
-                        duration = new Duration((int) totalLength);
-                        Track newTrack = new Track(trackName, duration, streamPath.toFile());
-                        newAlbum.addToAlbum(newTrack);
-                        DataStore.getInstance().addTrack(newTrack);
-                        for (String detail : details) {
-                            System.out.println("\t" + detail);
+                    String[] check = streamPath.toFile().toString().split("[.]");
+                    if (check[1].equals("wav")) {
+                        String[] details = streamPath.toString().split("-");
+                        String trackName = details[details.length - 1];
+                        Duration duration = new Duration();
+                        AudioFormat format;
+                        try (AudioInputStream streaminput = AudioSystem.getAudioInputStream(streamPath.toFile())) {
+                            format = streaminput.getFormat();
+                            long size = streamPath.toFile().length();
+                            int frameSize = format.getFrameSize();
+                            float frameRate = format.getFrameRate();
+                            float totalLength = (size / (frameSize * frameRate));
+                            duration = new Duration((int) totalLength);
+                            Track newTrack = new Track(trackName, duration, streamPath.toFile());
+                            newAlbum.addToAlbum(newTrack);
+                            DataStore.getInstance().addTrack(newTrack);
+                            for (String detail : details) {
+                                System.out.println("\t" + detail);
+                            }
                         }
+                    } else if (check[1].equals("png") || check[1].equals("jpg")) {
+                        System.out.println("image file detected");
+                        newAlbum.setAlbumArtwork(streamPath.toFile());
+                    } else {
+                        System.out.println("junk file detected");
+                        System.out.println(check[1]);
+                        continue;
                     }
                 }
                 DataStore.getInstance().addAlbum(newAlbum);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
-            System.out.println("exiting chooser");
-            return;
-        }
     }
 
 
     //like above, but takes a single wav file and returns a track object. again, works properly only when files re in
     //the bandcamp wav file naming format
+    //need to change this so that it is more tolerant of different file types
     public Track loadTrack( File file) {
 
         AudioFormat format;
         Track track = new Track();
         try (AudioInputStream stream = AudioSystem.getAudioInputStream(file)) {
-            String[] details = file.getName().split("-");
-            String name = details[3];
+//            String[] details = file.getName().split("-");
+//            String name = details[3];
+            String[] details = file.getName().split("[.]");
+            String name = details[0];
 
-            System.out.println("Name = " + name);
-            String[] namesplit = name.split(".");
+//            System.out.println("Name = " + name);
+//            String[] namesplit = name.split(".");
 
-            for (String test: namesplit) {
-                System.out.println("test: " + namesplit);
-            }
+//            for (String test: namesplit) {
+//                System.out.println("test: " + namesplit);
+//            }
             Duration duration;
 
             format = stream.getFormat();
@@ -154,6 +115,8 @@ public class FileManager {
         }
         return track;
     }
+
+
 
 
     public static void main(String[] args) {

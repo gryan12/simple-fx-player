@@ -89,10 +89,13 @@ public class TrackController implements AutoPlayer.MyChangeListener {
     @FXML
     private Slider slider;
 
+    private FileManager manager;
+
 
     public TrackController() {
         player = new AutoPlayer();
         player.setListener(this);
+        this.manager = new FileManager();
     }
 
 
@@ -243,49 +246,16 @@ public class TrackController implements AutoPlayer.MyChangeListener {
         setViewTracks(DataStore.getInstance().getTracks());
     }
 
-//    @FXML
-//    public void loadAlbum() {
-//        Album album = new Album();
-//        DirectoryChooser chooser = new DirectoryChooser();
-//        chooser.setInitialDirectory(new File("./"));
-//        File file = chooser.showDialog(mainPane.getScene().getWindow());
-//        if (file != null) {
-//            try {
-//                album = FileManager.getInstance().directoryToAlbum(FileSystems.getDefault().getPath(file.getAbsolutePath()));
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//
-//            for (Track track : album.getTrackList()) {
-//                DataStore.getInstance().addTrack(track);
-//            }
-//        }
-//    }
-//
-//    @FXML
-//    public void loadSong() {
-//        FileChooser chooser = new FileChooser();
-//        FileNameExtensionFilter filter = new FileNameExtensionFilter("wav files", "*.wav");
-//        chooser.setInitialDirectory(new File("./"));
-//
-//        try {
-//            File newFile = chooser.showOpenDialog(mainPane.getScene().getWindow());
-//
-//            Track newTrack = FileManager.getInstance().loadTrack(newFile);
-//            DataStore.getInstance().addTrack(newTrack);
-//        } catch(Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-
+//update the list view for this
     @FXML
     public void loadSingleTrack() {
-
         FileNameExtensionFilter filter = new FileNameExtensionFilter("wav files", "*.wav");
         FileChooser chooser = new FileChooser();
         chooser.setInitialDirectory(new File("./"));
         File file = chooser.showOpenDialog(mainPane.getScene().getWindow());
-        FileManager.getInstance().loadTrack(file);
+        if (file != null) {
+            manager.loadTrack(file);
+        }
     }
 
 
@@ -297,46 +267,14 @@ public class TrackController implements AutoPlayer.MyChangeListener {
         FileNameExtensionFilter filter = new FileNameExtensionFilter("wav files", "*.wav");
         chooser.setInitialDirectory(new File("./"));
         File file = chooser.showDialog(mainPane.getScene().getWindow());
-        FileManager.getInstance().loadAlbum(file);
-//        if (file != null) {
-//            System.out.println(file.canRead());
-//            Album newAlbum;
-//            if (file.toString().contains("-")) {
-//                String[] albumDetails = file.toString().split("-");
-//                newAlbum = new Album(albumDetails[0], albumDetails[1]);
-//            } else {
-//                newAlbum = new Album(file.toString(), file.toString());
-//            }
-//
-//            try (DirectoryStream<Path> stream = Files.newDirectoryStream(file.toPath())) {
-//                for (Path streamPath : stream) {
-//                    String[] details = streamPath.toString().split("-");
-//                    String trackName = details[details.length - 1];
-//                    Duration duration = new Duration();
-//                    AudioFormat format;
-//                    try (AudioInputStream streaminput = AudioSystem.getAudioInputStream(streamPath.toFile())) {
-//                        format = streaminput.getFormat();
-//                        long size = streamPath.toFile().length();
-//                        int frameSize = format.getFrameSize();
-//                        float frameRate = format.getFrameRate();
-//                        float totalLength = (size / (frameSize * frameRate));
-//                        duration = new Duration((int) totalLength);
-//                        Track newTrack = new Track(trackName, duration, streamPath.toFile());
-//                        newAlbum.addToAlbum(newTrack);
-//                        DataStore.getInstance().addTrack(newTrack);
-//                        for (String detail : details) {
-//                            System.out.println("\t" + detail);
-//                        }
-//                    }
-//                }
-//                DataStore.getInstance().addAlbum(newAlbum);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        } else {
-//            System.out.println("exiting chooser");
-//            return;
-//        }
+        if (file != null) {
+
+            manager.loadAlbum(file);
+            changeTrackView(DataStore.getInstance().getTracks());
+        } else {
+            System.out.println("exiting chooser");
+            return;
+        }
     }
 
 
