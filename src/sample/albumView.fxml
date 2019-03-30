@@ -59,7 +59,9 @@
       <AnchorPane prefHeight="511.0" prefWidth="152.0" BorderPane.alignment="CENTER">
          <VBox layoutY="32">
             <TextArea fx:id="rightDetailsArea" prefWidth="152" wrapText="true" BorderPane.alignment="CENTER" />
-            <ImageView fx:id="tesdddddd"/>
+             <AnchorPane fx:id="imagePane">
+                <ImageView fx:id="imageID"/>
+             </AnchorPane>
          </VBox>
       </AnchorPane>
 

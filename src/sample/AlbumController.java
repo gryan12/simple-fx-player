@@ -3,6 +3,7 @@ package sample;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -12,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -23,11 +25,14 @@ import sample.FileManager;
 import sample.trackClasses.Track;
 import unused.FilePlayer;
 
+import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -69,9 +74,11 @@ public class AlbumController {
     ContextMenu albumListContextMenu;
 
     @FXML
-    ImageView tesdddddd;
+    ImageView imageID;
 //    @FXML
 //    ImageView artworkImageView;
+    @FXML
+    AnchorPane imagePane;
 
 public void initialize() {
     }
@@ -239,12 +246,30 @@ public void initialize() {
         return player;
     }
 
-    public void loadAlbumArtwork(Album album) {
-        System.out.println("this is being passed: " + album.getAlbumArtwork().getName());
-//        Image img = new Image("/yunosuke-pathos/cover.jpg");
-        tesdddddd = new ImageView(getClass().getResource("/yunosuke-pathos/cover.jpg").toExternalForm());
-    }
+//    public void loadAlbumArtwork(Album album) {
+//        System.out.println("this is being passed: " + album.getAlbumArtwork().getName());
+////        Image img = new Image("/yunosuke-pathos/cover.jpg");
+//        tesdddddd = new ImageView(getClass().getResource("/yunosuke-pathos/cover.jpg").toExternalForm());
+//    }
 
+    public void loadAlbumArtwork(Album album) {
+
+        if (album.getAlbumArtwork() == null) {
+            imageID.setImage(null);
+        } else {
+            BufferedImage bufferedImage;
+
+            try {
+                bufferedImage = ImageIO.read(album.getAlbumArtwork());
+                Image image = SwingFXUtils.toFXImage(bufferedImage, null);
+                this.imageID.setImage(image);
+                this.imageID.fitWidthProperty().bind(imagePane.widthProperty());
+                this.imageID.setPreserveRatio(true);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public void setPlayer(AutoPlayer player) {
         this.player = player;
