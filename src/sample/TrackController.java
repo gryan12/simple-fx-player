@@ -21,6 +21,8 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import sample.dialog.DialogController;
+import sample.dialog.TrackDialogController;
 import sample.trackClasses.Album;
 import sample.trackClasses.Duration;
 import sample.FileManager;
@@ -41,14 +43,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
-public class TrackController implements AutoPlayer.MyChangeListener {
+public class TrackController {
     //for testing
     public Track currentSong;
     public File currentFile;
     public static Thread musicPlayerThread;
-    private AutoPlayer player;
+    private AutoPlayer player = AutoPlayer.getInstance();
     private AlbumController albumController;
     private Scene albumScene;
     @FXML
@@ -88,33 +91,49 @@ public class TrackController implements AutoPlayer.MyChangeListener {
     private ContextMenu listContextMenu;
     @FXML
     private Slider slider;
+    @FXML
+
+    private Parent controllerRoot;
 
     private FileManager manager;
 
 
     public TrackController() {
-        player = new AutoPlayer();
-        player.setListener(this);
+//        player = new AutoPlayer();
         this.manager = new FileManager();
     }
 
 
-    @Override
-    public void onChangeHappened() {
-        setcurrentTrackLabel(player.getToPlay().get(player.getCurrentIndex()));
+    public void setControllerRoot(Parent controllerRoot) {
+        this.controllerRoot = controllerRoot;
     }
 
+    public Parent getControllerRoot() {
+        return controllerRoot;
+    }
 
-
-
-
-
-
+    public void loadControlls(Parent root) {
+        mainPane.setBottom(root);
+    }
+    public void loadControlls( ) {
+        mainPane.setBottom(controllerRoot);
+    }
 
 
     @FXML
     public void initialize() {
+
+//        try {
+////            FXMLLoader loader = new FXMLLoader(getClass().getResource("controllerView.fxml"));
+////            controllerRoot = loader.load();
+//            mainPane.setBottom(controllerRoot);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
+
+
+
 
     public AutoPlayer getPlayer() {
         return player;
@@ -123,10 +142,6 @@ public class TrackController implements AutoPlayer.MyChangeListener {
     public Scene getAlbumScene() {
         return albumScene;
     }
-
-
-
-
 
 
     //====functions to change the view of tracks====
@@ -156,19 +171,34 @@ public class TrackController implements AutoPlayer.MyChangeListener {
     public void setUpListView() {
         listContextMenu = new ContextMenu();
         MenuItem playMenuItem = new MenuItem("Play");
+        MenuItem editMenuItem = new MenuItem("Edit Track Name");
         playMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 Track track = trackListView.getSelectionModel().getSelectedItem();
-                try {
-                    contextPlay();
-                } catch (Exception e) {
-                    System.out.println("cant play that sonny");
-                    e.printStackTrace();
+                if (track != null) {
+                    try {
+                        contextPlay();
+                    } catch (Exception e) {
+                        System.out.println("cant play that sonny");
+                        e.printStackTrace();
+                    }
                 }
             }
         });
-        listContextMenu.getItems().addAll(playMenuItem);
+
+        editMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Track track = trackListView.getSelectionModel().getSelectedItem();
+                if(track != null) {
+                    editTrackDialog(track);
+                } else {
+                    return;
+                }
+            }
+        });
+        listContextMenu.getItems().addAll(playMenuItem, editMenuItem);
 
         trackListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Track>() {
             @Override
@@ -207,7 +237,11 @@ public class TrackController implements AutoPlayer.MyChangeListener {
                     if (isNowHovered && !cell.isEmpty()) {
                         Track track = cell.getItem();
                         rightDetailsArea.setText("Name: " + track.getTitle()
-                                + "\n\n" + "Duration: " + track.getDuration().toString());
+                                + "\n\n" + "Duration: " + track.getDuration().toString() + "\n");
+                        if (track.getAlbum() != null) {
+                            rightDetailsArea.appendText("\nArtist: " + track.getAlbum().getArtist() + "\n"
+                            + "\nAlbum: " + track.getAlbum().getName());
+                        }
                     }
                 }));
                 return cell;
@@ -234,11 +268,13 @@ public class TrackController implements AutoPlayer.MyChangeListener {
     }
 
 
+    //====load next view
 
     @FXML
     public void openAlbumScene(ActionEvent ae) {
        Stage primaryStage = (Stage)((Node)ae.getSource()).getScene().getWindow();
        primaryStage.setScene(albumScene);
+       albumController.loadControlls(controllerRoot);
     }
 
 
@@ -302,35 +338,36 @@ public class TrackController implements AutoPlayer.MyChangeListener {
             count ++;
         }
         player.populateList(trackListView.getItems(), index);
-        System.out.println(player.getCurrentIndex());
-        setcurrentTrackLabel(player.getToPlay().get(player.getCurrentIndex()));
+        System.out.println(player.getCurrentIndex() + " : " + player.getToPlay().size());
+//        setcurrentTrackLabel(player.getToPlay().get(player.getCurrentIndex()));
         player.newPlay();
 
     }
 
     //again change label to auto updating, placeholder currently
-    @FXML
-    public void handlePlayerControlls(ActionEvent ae) {
-        if (ae.getSource() == play) {
-            if (!player.shouldResume()) {
-                contextPlay();
-            } else {
-                player.resume();
-                setcurrentTrackLabel(player.getToPlay().get(player.getCurrentIndex()));
-            }
-        } else if (ae.getSource() == pause) {
-            System.out.println("pause");
-            player.pause();
-        } else if (ae.getSource() == next) {
-            System.out.println("next");
-            player.next();
-            setcurrentTrackLabel(player.getToPlay().get(player.getCurrentIndex()+1));
-        } else if (ae.getSource() == prev) {
-            System.out.println("prev");
-            player.prev();
-            setcurrentTrackLabel(player.getToPlay().get(player.getCurrentIndex()-1));
-        }
-    }
+//    @FXML
+//    public void handlePlayerControlls(ActionEvent ae) {
+//        if (ae.getSource() == play) {
+//            if (!player.shouldResume()) {
+//                contextPlay();
+//            } else {
+//                player.resume();
+//                setcurrentTrackLabel(player.getToPlay().get(player.getCurrentIndex()));
+//            }
+//        } else if (ae.getSource() == pause) {
+//            System.out.println("THIS IS IN THE TRACK CONTROLLER 4HOUSE");
+//            System.out.println("pause");
+//            player.pause();
+//        } else if (ae.getSource() == next) {
+//            System.out.println("next");
+//            player.next();
+//            setcurrentTrackLabel(player.getToPlay().get(player.getCurrentIndex()+1));
+//        } else if (ae.getSource() == prev) {
+//            System.out.println("prev");
+//            player.prev();
+//            setcurrentTrackLabel(player.getToPlay().get(player.getCurrentIndex()-1));
+//        }
+//    }
 
 
     public void handleTestPlay() {
@@ -365,11 +402,36 @@ public class TrackController implements AutoPlayer.MyChangeListener {
     public void setViewLabel(String text) {
        this.viewLabel.setText(text);
     }
-    public void setcurrentTrackLabel(Track track) {
-       currentTrackLabel.setText(track.getTitle());
+
+
+    public void editTrackDialog(Track track) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.initOwner(mainPane.getScene().getWindow());
+        dialog.setTitle("Edit Track Name");
+        dialog.setHeight(400);
+        dialog.setWidth(400);
+        TrackDialogController controller = null;
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("dialog/editTrackDialog.fxml"));
+        try {
+            dialog.getDialogPane().setContent(loader.load());
+            controller = loader.getController();
+            controller.setDefaults(track);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if(result.isPresent() && result.get() == ButtonType.OK) {
+            controller.processFields(track);
+        } else {
+            return;
+        }
+//
     }
-
-
 
 
 

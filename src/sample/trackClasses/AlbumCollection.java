@@ -8,8 +8,10 @@ Date: 04/11/2018
 
  */
 import java.util.ArrayList;
+import java.util.List;
 
 public class AlbumCollection {
+    private long serialVersionUID = 6L;
 
     private ArrayList<Album> albumList;
 
@@ -40,6 +42,14 @@ public class AlbumCollection {
 
     public ArrayList<Album> getAlbumList() {
         return albumList;
+    }
+
+    public List<Track> getTracks() {
+        ArrayList<Track> trackList = new ArrayList<>();
+        for (Album album: albumList) {
+           trackList.addAll(album.getTrackList());
+        }
+        return trackList;
     }
 
 }

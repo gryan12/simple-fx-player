@@ -20,6 +20,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+
+        AutoPlayer plauyer = new AutoPlayer();
+
         FXMLLoader trackLoader = new FXMLLoader(getClass().getResource("trackView.fxml"));
         Parent trackPane = trackLoader.load();
         Scene trackScene = new Scene(trackPane, 1200, 800);
@@ -27,6 +30,11 @@ public class Main extends Application {
         FXMLLoader albumLoader = new FXMLLoader(getClass().getResource("albumView.fxml"));
         Parent albumPane = albumLoader.load();
         Scene albumScene = new Scene(albumPane, 1200, 800);
+
+        FXMLLoader controllerLoader = new FXMLLoader(getClass().getResource("controllerView.fxml"));
+        Parent root = controllerLoader.load();
+
+        ControllerController controllController = (ControllerController)controllerLoader.getController();
 
         TrackController trackController = (TrackController)trackLoader.getController();
         trackController.setAlbumScene(albumScene);
@@ -38,11 +46,15 @@ public class Main extends Application {
         albumController.setTrackController(trackController);
         trackController.setAlbumController(albumController);
 
+        trackController.setControllerRoot(root);
+        albumController.setControllerRoot(root);
+
         trackScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         albumScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-
         primaryStage.setTitle("Simple FX Wav Player");
         primaryStage.setScene(trackScene);
+        trackController.loadControlls(root);
+//        controllController.setUpSlider();
         trackController.setUpListView();
         primaryStage.show();
     }

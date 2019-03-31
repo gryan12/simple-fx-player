@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.scene.Parent;
 import javafx.stage.DirectoryChooser;
 import sample.trackClasses.Album;
 import sample.trackClasses.Duration;
@@ -20,8 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+//plan to revamp this with sopme more advanced regex to choose parts of the filenames that most likely are the
+//album/track names
 public class FileManager {
-    private Pattern regex = Pattern.compile( "([^\\s]+(\\.(?i)(wav|mp3))$)");
+    private Pattern musicRegex = Pattern.compile( "([^\\s]+(\\.(?i)(wav))$)");
+    private Pattern imageRegex = Pattern.compile( "([^\\s]+(\\.(?i)(jpg|png))$)");
 
 
     public FileManager() {
@@ -40,10 +44,8 @@ public class FileManager {
 
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(file.toPath())) {
                 for (Path streamPath : stream) {
-
-
                     String[] check = streamPath.toFile().toString().split("[.]");
-                    if (check[1].equals("wav")) {
+                    if (check[check.length-1].equals("wav")) {
                         String[] details = streamPath.toString().split("-");
                         String trackName = details[details.length - 1];
                         Duration duration = new Duration();
@@ -56,18 +58,18 @@ public class FileManager {
                             float totalLength = (size / (frameSize * frameRate));
                             duration = new Duration((int) totalLength);
                             Track newTrack = new Track(trackName, duration, streamPath.toFile());
+                            newTrack.setAlbum(newAlbum);
                             newAlbum.addToAlbum(newTrack);
                             DataStore.getInstance().addTrack(newTrack);
                             for (String detail : details) {
                                 System.out.println("\t" + detail);
                             }
                         }
-                    } else if (check[1].equals("png") || check[1].equals("jpg")) {
+                    } else if (check[check.length-1].equals("png") || check[1].equals("jpg")) {
                         System.out.println("image file detected");
                         newAlbum.setAlbumArtwork(streamPath.toFile());
                     } else {
                         System.out.println("junk file detected");
-                        System.out.println(check[1]);
                         continue;
                     }
                 }
@@ -86,21 +88,10 @@ public class FileManager {
         AudioFormat format;
         Track track = new Track();
         try (AudioInputStream stream = AudioSystem.getAudioInputStream(file)) {
-//            String[] details = file.getName().split("-");
-//            String name = details[3];
             String[] details = file.getName().split("[.]");
             String name = details[0];
-
-//            System.out.println("Name = " + name);
-//            String[] namesplit = name.split(".");
-
-//            for (String test: namesplit) {
-//                System.out.println("test: " + namesplit);
-//            }
             Duration duration;
-
             format = stream.getFormat();
-
             long length = file.length();
             float frameRate = format.getFrameRate();
             float frameSize = format.getFrameSize();

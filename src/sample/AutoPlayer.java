@@ -1,6 +1,9 @@
 package sample;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
+import javafx.scene.control.Slider;
 import sample.trackClasses.Duration;
 import sample.trackClasses.Track;
 
@@ -23,9 +26,18 @@ public class AutoPlayer  {
     private static corePlayer player = new corePlayer();
     private static boolean resuming = false;
     private static Task<?> lastTask = null;
+
     private static MyChangeListener listener;
 
+    public static AutoPlayer instance;
 
+    public static AutoPlayer getInstance() {
+        return instance;
+    }
+
+    public AutoPlayer() {
+       instance = this;
+    }
 
 
 
@@ -33,6 +45,7 @@ public class AutoPlayer  {
     private static void runTask(Task<?> task) {
         registerTask(task);
         new Thread(task).start();
+        updateListener();
     }
 
     private static synchronized void registerTask(Task<?> task) {
@@ -43,37 +56,29 @@ public class AutoPlayer  {
     }
 
     //================= generate player-related tasks========================
-    private static Task<?> generatePlayTask() {
+    private static Task<?> generatePlayTask()throws BrokenBarrierException, InterruptedException {
         Task newTask = new Task() {
             @Override
             protected Object call() throws Exception {
                 player.play(toPlay.get(currentIndex).getFile());
-//                currentIndex++;
-//                if (player.startNext && currentIndex < (toPlay.size() - 1) && player.clip.getFramePosition() == player.clip.getFrameLength()) {
-//                    next();
-//                }
                 return null;
             }
         };
         return newTask;
     }
 
-    private static Task<?> generateNewPlayTask() {
+    private static Task<?> generateNewPlayTask() throws BrokenBarrierException, InterruptedException{
         Task newTask = new Task() {
             @Override
             protected Object call() throws Exception {
                 player.pause();
                 player.play(toPlay.get(currentIndex).getFile());
-//                currentIndex++;
-//                if (player.startNext && currentIndex < (toPlay.size() - 1) && player.clip.getFramePosition() == player.clip.getFrameLength()) {
-//                    next();
-//                }
                 return null;
             }
         };
         return newTask;
     }
-    private static Task<?> generatePauseTask() {
+    private static Task<?> generatePauseTask() throws BrokenBarrierException, InterruptedException{
         Task newTask = new Task() {
             @Override
             protected Object call() throws Exception {
@@ -85,13 +90,12 @@ public class AutoPlayer  {
     }
 
 
-    private static Task<?> generateNextTask() {
+    private static Task<?> generateNextTask() throws BrokenBarrierException, InterruptedException{
         Task newTask = new Task() {
             @Override
             protected Object call() throws Exception {
                 player.pause();
                 currentIndex++;
-                updateListener();
                 player.play(toPlay.get(currentIndex).getFile());
                 return null;
             }
@@ -99,13 +103,12 @@ public class AutoPlayer  {
         return newTask;
     }
 
-    private static Task<?> generatePrevTask() {
+    private static Task<?> generatePrevTask() throws BrokenBarrierException, InterruptedException{
         Task newTask = new Task() {
             @Override
             protected Object call() throws Exception {
                 player.pause();
                 currentIndex--;
-                updateListener();
                 player.play(toPlay.get(currentIndex).getFile());
                 return null;
             }
@@ -116,15 +119,27 @@ public class AutoPlayer  {
     //=============the controller commands ==================
 
     public static void play() {
-
-        runTask(generatePlayTask());
+        try {
+            runTask(generatePlayTask());
+        } catch (BrokenBarrierException | InterruptedException e) {
+            System.out.println("task interrupted");
+        }
     }
 
     public static void newPlay() {
         if (player.currentFile == null) {
+            try {
             runTask(generatePlayTask());
+            } catch (BrokenBarrierException | InterruptedException e) {
+                System.out.println("task interrupted");
+            }
         } else {
-            runTask(generateNewPlayTask());
+            try {
+
+                runTask(generateNewPlayTask());
+            } catch (InterruptedException | BrokenBarrierException e) {
+                System.out.println("task interrupted");
+            }
         }
     }
     public static void resume() {
@@ -132,14 +147,24 @@ public class AutoPlayer  {
             System.out.println("already playing");
             return;
         }
-        runTask(generatePlayTask());
+        try {
+
+            runTask(generatePlayTask());
+        } catch (InterruptedException | BrokenBarrierException e) {
+            System.out.println("task interupted");
+        }
     }
     public static void pause() {
         if (player.isPaused) {
             System.out.println("already paused");
             return;
         }
-        runTask(generatePauseTask());
+        try {
+
+            runTask(generatePauseTask());
+        } catch (InterruptedException | BrokenBarrierException e) {
+            System.out.println("task interrupted");
+        }
 
     }
 
@@ -148,7 +173,11 @@ public class AutoPlayer  {
             System.out.println("already at end of list");
             return;
         }
-        runTask(generateNextTask());
+        try {
+            runTask(generateNextTask());
+        }  catch (InterruptedException | BrokenBarrierException e) {
+            System.out.println("task interrupted");
+        }
 
     }
     public static void prev() {
@@ -156,7 +185,12 @@ public class AutoPlayer  {
             System.out.println("already at beginning of list");
             return;
         }
-        runTask(generatePrevTask());
+        try {
+
+            runTask(generatePrevTask());
+        } catch (InterruptedException | BrokenBarrierException e) {
+            System.out.println("thread interrupted");
+        }
     }
 
 //================================================================================================================
@@ -179,18 +213,14 @@ public class AutoPlayer  {
         }
             return true;
    }
-
-
-
-
 public static void incrementCurrent() {
         currentIndex++;
 }
 
+//allows for dynamically updating the controller ui with current track information
 public static void updateListener() {
         listener.onChangeHappened();
 }
-
 
 
 //======setters and getters===============================
@@ -240,6 +270,11 @@ public static void updateListener() {
     }
 
 
+   public void bindSliderToPosition(Slider slider) {
+        player.currentPosition.setValue(player.clip.getFramePosition() / player.clip.getFrameLength());
+       slider.valueProperty().bind(player.currentPosition);
+   }
+
     private static class corePlayer {
         private static corePlayer instance = new corePlayer();
         private static boolean isPlaying;
@@ -250,6 +285,7 @@ public static void updateListener() {
         private static Clip clip;
         private static AudioInputStream audioIn;
         private static boolean startNext = false;
+        private IntegerProperty currentPosition;
 
 
         public void play(File file) {
@@ -274,7 +310,6 @@ public static void updateListener() {
                     listenForAutoPlay(clip);
                     listenForFileEnd(clip);
                     clip.open(audioIn);
-                    System.out.println("prestart");
                     clip.start();
                     waitForSoundEnd();
                 } catch (Exception e) {
@@ -320,7 +355,8 @@ public static void updateListener() {
             try {
                 barrier.await();
             }catch (InterruptedException | BrokenBarrierException e) {
-                throw new RuntimeException(e);
+//                throw new RuntimeException(e);
+//                System.out.println("heads up - broke the barrier");
             }
         }
 

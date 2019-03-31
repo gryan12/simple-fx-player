@@ -67,26 +67,26 @@
 
    </right>
    <bottom>
-      <VBox prefHeight="62.0" prefWidth="600.0" styleClass="controlls" BorderPane.alignment="CENTER">
-         <children>
-            <HBox alignment="CENTER" styleClass="centerLabel">
-                 <Label fx:id="currentTrackLabel" alignment="CENTER" text="" />
-             </HBox>
-            <HBox fx:id="controllBox" alignment="CENTER" prefHeight="59.0" prefWidth="600.0">
-               <children>
-                  <Button fx:id="prev" mnemonicParsing="false" onAction="#handlePlayerControlls" text="Previous" />
-                  <Button fx:id="play" mnemonicParsing="false" onAction="#handlePlayerControlls" text="Play" />
-                  <Button fx:id="pause" mnemonicParsing="false" onAction="#handlePlayerControlls" text="Pause" />
-                  <Button fx:id="next" mnemonicParsing="false" onAction="#handlePlayerControlls" text="Next" />
-               </children>
-            </HBox>
-            <HBox fx:id="sliderBox" alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-               <children>
-                  <Slider fx:id="slider" />
-               </children>
-            </HBox>
-         </children>
-      </VBox>
+      <!--<VBox prefHeight="62.0" prefWidth="600.0" styleClass="controlls" BorderPane.alignment="CENTER">-->
+         <!--<children>-->
+            <!--<HBox alignment="CENTER" styleClass="centerLabel">-->
+                 <!--<Label fx:id="currentTrackLabel" alignment="CENTER" text="" />-->
+             <!--</HBox>-->
+            <!--<HBox fx:id="controllBox" alignment="CENTER" prefHeight="59.0" prefWidth="600.0">-->
+               <!--<children>-->
+                  <!--<Button fx:id="prev" mnemonicParsing="false" onAction="#handlePlayerControlls" text="Previous" />-->
+                  <!--<Button fx:id="play" mnemonicParsing="false" onAction="#handlePlayerControlls" text="Play" />-->
+                  <!--<Button fx:id="pause" mnemonicParsing="false" onAction="#handlePlayerControlls" text="Pause" />-->
+                  <!--<Button fx:id="next" mnemonicParsing="false" onAction="#handlePlayerControlls" text="Next" />-->
+               <!--</children>-->
+            <!--</HBox>-->
+            <!--<HBox fx:id="sliderBox" alignment="CENTER" prefHeight="100.0" prefWidth="200.0">-->
+               <!--<children>-->
+                  <!--<Slider fx:id="slider" />-->
+               <!--</children>-->
+            <!--</HBox>-->
+         <!--</children>-->
+      <!--</VBox>-->
    </bottom>
    <top>
       <VBox prefHeight="65.0" prefWidth="846.0" styleClass="header-region" BorderPane.alignment="CENTER">

@@ -1,4 +1,7 @@
-package sample.trackClasses;
+package unused;
+
+import sample.trackClasses.Album;
+import sample.trackClasses.Track;
 
 /*
 Class: PlaylistTrack
@@ -30,4 +33,7 @@ public class PlaylistTrack extends Track {
     public Album getTrackAlbum() {
         return trackAlbum;
     }
+
+
+
 }

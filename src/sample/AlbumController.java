@@ -9,6 +9,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -19,6 +20,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import sample.dialog.DialogController;
 import sample.trackClasses.Album;
 import sample.trackClasses.Duration;
 import sample.FileManager;
@@ -36,12 +38,14 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
 public class AlbumController {
 
     private Scene trackScene;
-    private AutoPlayer player;
+    private AutoPlayer player = AutoPlayer.getInstance();
     private TrackController trackController;
+
     FileManager manager;
 
 
@@ -80,7 +84,31 @@ public class AlbumController {
     @FXML
     AnchorPane imagePane;
 
+    @FXML
+    Label currentTrackLabel;
+
+    private Parent controllerRoot;
+
 public void initialize() {
+
+    }
+
+    public void loadControlls(Parent root) {
+       mainPane.setBottom(root);
+    }
+
+
+    public Parent getControllerRoot() {
+        return controllerRoot;
+    }
+
+    public void setControllerRoot(Parent controllerRoot) {
+        this.controllerRoot = controllerRoot;
+    }
+
+    public void loadPlayerControlls() {
+        Parent root = trackController.getControllerRoot();
+        mainPane.setBottom(root);
     }
 
     public AlbumController() {
@@ -94,8 +122,6 @@ public void initialize() {
     public void setScene(Scene trackScene) {
         this.trackScene = trackScene;
     }
-
-
 
     //============functions for moving between different view of tracks ===================
     @FXML
@@ -115,6 +141,7 @@ public void initialize() {
         System.out.println("\n size total: " + DataStore.getInstance().getTracks().size());
         Stage primaryStage = (Stage)((Node)mainPane).getScene().getWindow();
         primaryStage.setScene(trackScene);
+        trackController.loadControlls(controllerRoot);
     }
 
     //trackview with that album's tracks
@@ -126,6 +153,7 @@ public void initialize() {
         trackController.setViewLabel(album.getName() + " : " + album.getArtist());
         Stage primaryStage = (Stage)((Node)mainPane).getScene().getWindow();
         primaryStage.setScene(trackScene);
+        trackController.loadControlls(controllerRoot);
     }
 
     @FXML
@@ -144,6 +172,7 @@ public void initialize() {
 
     public void setUpAlbumView() {
         albumListContextMenu = new ContextMenu();
+        MenuItem editMenuItem = new MenuItem("Edit Album Details");
         MenuItem albumMenuItem = new MenuItem("Go To Album");
         albumMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -157,7 +186,19 @@ public void initialize() {
                 }
             }
         });
-        albumListContextMenu.getItems().addAll(albumMenuItem);
+        editMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Album album = albumListView.getSelectionModel().getSelectedItem();
+                if (album != null) {
+                    editAlbumDialog(album);
+                } else {
+                    return;
+                }
+            }
+        });
+
+        albumListContextMenu.getItems().addAll(albumMenuItem, editMenuItem);
 
 //        albumListView.setItems(DataStore.getInstance().getAlbums());
         albumListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Album>() {
@@ -167,7 +208,9 @@ public void initialize() {
                     Album album = albumListView.getSelectionModel().getSelectedItem();
                     rightDetailsArea.setText("Artist: " + album.getArtist()
                             + "\n" + "Album name: " + album.getName());
-                    loadAlbumArtwork(album);
+                    if (album.getAlbumArtwork() != null) {
+                        loadAlbumArtwork(album);
+                    }
                 }
             }
         });
@@ -271,7 +314,46 @@ public void initialize() {
         }
     }
 
+
+    public void editAlbumDialog(Album album) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.initOwner(mainPane.getScene().getWindow());
+        dialog.setTitle("Edit An Album");
+        dialog.setHeight(800);
+        dialog.setWidth(800);
+        DialogController controller = null;
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("dialog/editDialog.fxml"));
+        try {
+            dialog.getDialogPane().setContent(loader.load());
+            controller = loader.getController();
+            controller.setDefaults(album);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if(result.isPresent() && result.get() == ButtonType.OK) {
+            controller.processFields(album);
+        } else {
+            return;
+        }
+        albumListView.refresh();
+
+//        albumListView = new ListView<>(DataStore.getInstance().getAlbums());
+    }
+
+
+
+
     public void setPlayer(AutoPlayer player) {
         this.player = player;
+    }
+
+    public void setCurrentTrackLabel(Track track) {
+        this.currentTrackLabel.setText(track.getTitle());
     }
 }
