@@ -40,9 +40,11 @@
                     <Button fx:id="next" mnemonicParsing="false" onAction="#handlePlayerControlls" text="Next" />
                 </children>
             </HBox>
-            <HBox fx:id="sliderBox" alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+            <HBox fx:id="sliderBox" alignment="CENTER" prefHeight="100.0" prefWidth="500.0">
                 <children>
-                    <Slider fx:id="slider" />
+                    <Label fx:id="currentTime" text="ct"/>
+                    <Slider fx:id="slider" prefWidth="500" max="100" min="0" value="0"/>
+                    <Label fx:id="endTime" text="et"/>
                 </children>
             </HBox>
         </children>

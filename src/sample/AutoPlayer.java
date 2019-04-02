@@ -1,18 +1,24 @@
 package sample;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.StringProperty;
+import com.sun.deploy.panel.IProperty;
+import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.scene.control.Slider;
 import sample.trackClasses.Duration;
 import sample.trackClasses.Track;
 
 import javax.sound.sampled.*;
+import java.applet.AudioClip;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 import java.util.concurrent.*;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 
 public class AutoPlayer  {
@@ -245,6 +251,9 @@ public static void updateListener() {
     public Clip getClip() {
         return player.clip;
     }
+
+
+
     public void setClipPosition(int x) {
         player.clip.setFramePosition(x);
     }
@@ -271,8 +280,7 @@ public static void updateListener() {
 
 
    public void bindSliderToPosition(Slider slider) {
-        player.currentPosition.setValue(player.clip.getFramePosition() / player.clip.getFrameLength());
-       slider.valueProperty().bind(player.currentPosition);
+      slider.valueProperty().bindBidirectional(player.currentPosition());
    }
 
     private static class corePlayer {
@@ -285,8 +293,18 @@ public static void updateListener() {
         private static Clip clip;
         private static AudioInputStream audioIn;
         private static boolean startNext = false;
-        private IntegerProperty currentPosition;
 
+        public DoubleProperty currentPosition() {
+            return currentPos;
+        }
+
+        public Double getCurrentPos() {
+            return currentPos.get();
+        }
+
+        public final void setValue(Double value) {
+            this.currentPos.set(value);
+        }
 
         public void play(File file) {
 
@@ -311,6 +329,7 @@ public static void updateListener() {
                     listenForFileEnd(clip);
                     clip.open(audioIn);
                     clip.start();
+                    currentPos.setValue(clip.getFramePosition());
                     waitForSoundEnd();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -318,6 +337,7 @@ public static void updateListener() {
                 }
             }
         }
+
 
         private void flush() {
             currentFile = null;
@@ -365,13 +385,69 @@ public static void updateListener() {
         }
 
 
+        int audiolength, audioposition;
 
+        private void initiateProgressTracking() {
+
+        }
+//        private void tick() {
+//            if (clip.isActive() && isPlaying) {
+//                audioposition = (int)(clip.getMicrosecondPosition());
+//                updateSlider();
+//            } else {
+//                return;
+//            }
+//        }
+//
+//        public void skip(int position) {
+//            if (position < 0 || position > clip.getMicrosecondLength())
+//                return;
+//            clip.setMicrosecondPosition(position * 1000);
+////            progress.setValue(position);
+//            updateSlider();
+//
+
+
+        //==slider update functions
+
+        private final ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
+        private final DoubleProperty currentPos = new SimpleDoubleProperty(0);
+
+        private void checkTrackProgress() {
+            final Runnable checkProgress = new Runnable() {
+                @Override
+                public void run() {
+                    double value =(clip.getFramePosition() / clip.getFrameLength())*100;
+                    System.out.println(value);
+                    currentPos.setValue((clip.getFramePosition() / clip.getFrameLength())*100);
+                    System.out.println("chcekr seems to be running");
+                }
+            };
+            final ScheduledFuture<?> handleProgress = service.scheduleAtFixedRate(checkProgress, 1, 1, SECONDS);
+        }
+
+        private double getPosition() {
+            return clip.getMicrosecondPosition();
+        }
+        private double getRelativePosition() {
+            double length = clip.getMicrosecondLength();
+            double position = clip.getMicrosecondPosition();
+
+            double relativePos =(((double)position *100/ (double)length));
+
+            return relativePos;
+        }
     }
 
     public interface MyChangeListener {
         public void onChangeHappened();
     }
 
+    public double getClipPosition() {
+        return player.getPosition();
+    }
 
-
+    public double getRelativePosition() {
+        return player.getRelativePosition();
+    }
 }
