@@ -1,25 +1,19 @@
 package sample;
 
-import com.sun.deploy.panel.IProperty;
-import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.scene.control.Slider;
-import sample.trackClasses.Duration;
 import sample.trackClasses.Track;
-
 import javax.sound.sampled.*;
-import java.applet.AudioClip;
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
 import java.util.concurrent.*;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
+/*
+    as a learning exercise, this class had three aims: function as a singleton, play audio
+    using java.sound.sampled.Clip, and use tasks to implement player functionality.
+    It is thus inherently far from optimal.
+    If this was going to be a real application, you'd just use the javafx MediaPlayer class.
+ */
 
 public class AutoPlayer  {
 
@@ -27,12 +21,9 @@ public class AutoPlayer  {
     private static boolean onShuffle = false;
     private static List<Track> toPlay;
     private static int currentIndex = 0;
-    private static boolean stop = false;
-    private static Thread autoPlayerThread;
     private static corePlayer player = new corePlayer();
     private static boolean resuming = false;
     private static Task<?> lastTask = null;
-
     private static MyChangeListener listener;
 
     public static AutoPlayer instance;
@@ -45,7 +36,12 @@ public class AutoPlayer  {
        instance = this;
     }
 
-
+    public boolean isPlaying() {
+        if (player.isPlaying) {
+            return true;
+        }
+        return false;
+    }
 
 //========================cancel any player-related task that is active when another one is called==========
     private static void runTask(Task<?> task) {
@@ -102,6 +98,12 @@ public class AutoPlayer  {
             protected Object call() throws Exception {
                 player.pause();
                 currentIndex++;
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateListener();
+                    }
+                });
                 player.play(toPlay.get(currentIndex).getFile());
                 return null;
             }
@@ -115,6 +117,12 @@ public class AutoPlayer  {
             protected Object call() throws Exception {
                 player.pause();
                 currentIndex--;
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateListener();
+                    }
+                });
                 player.play(toPlay.get(currentIndex).getFile());
                 return null;
             }
@@ -128,7 +136,6 @@ public class AutoPlayer  {
         try {
             runTask(generatePlayTask());
         } catch (BrokenBarrierException | InterruptedException e) {
-            System.out.println("task interrupted");
         }
     }
 
@@ -141,7 +148,6 @@ public class AutoPlayer  {
             }
         } else {
             try {
-
                 runTask(generateNewPlayTask());
             } catch (InterruptedException | BrokenBarrierException e) {
                 System.out.println("task interrupted");
@@ -198,8 +204,8 @@ public class AutoPlayer  {
             System.out.println("thread interrupted");
         }
     }
-
-//================================================================================================================
+//===============================================================================================================
+//functions to load reference to the list of tracks to be played.
     public void populateList(List<Track> trackList) {
         if (!onShuffle) {
             int index =0;
@@ -219,14 +225,14 @@ public class AutoPlayer  {
         }
             return true;
    }
-public static void incrementCurrent() {
-        currentIndex++;
-}
+    public static void incrementCurrent() {
+            currentIndex++;
+    }
 
-//allows for dynamically updating the controller ui with current track information
-public static void updateListener() {
-        listener.onChangeHappened();
-}
+    //allows for dynamically updating the controller ui with current track information
+    public static void updateListener() {
+            listener.onChangeHappened();
+    }
 
 
 //======setters and getters===============================
@@ -253,36 +259,26 @@ public static void updateListener() {
     }
 
 
-
-    public void setClipPosition(int x) {
-        player.clip.setFramePosition(x);
-    }
-
-
-    public MyChangeListener getListener() {
-        return listener;
-    }
-
     public void setListener(MyChangeListener listener) {
         this.listener = listener;
     }
 
-    //listener function that implements autoplay feature.
-    private static void listenForAutoPlay(Clip clip) {
-        clip.addLineListener(event -> {
-            if (event.getType() == LineEvent.Type.STOP && clip.getFramePosition() == clip.getFrameLength()) {
-                if (currentIndex < toPlay.size()-1) {
-                    next();
-                }
-            }
-        });
+
+    public interface MyChangeListener {
+        void onChangeHappened();
     }
 
 
-   public void bindSliderToPosition(Slider slider) {
-      slider.valueProperty().bindBidirectional(player.currentPosition());
-   }
+    public double getRelativePosition() {
+        return player.getRelativePosition();
+    }
+    public void changeTrackPosition(int relativePosition) {
+        player.changeTrackPosition(relativePosition);
+    }
 
+
+
+   //inner class with functions to play wav files
     private static class corePlayer {
         private static corePlayer instance = new corePlayer();
         private static boolean isPlaying;
@@ -294,26 +290,16 @@ public static void updateListener() {
         private static AudioInputStream audioIn;
         private static boolean startNext = false;
 
-        public DoubleProperty currentPosition() {
-            return currentPos;
-        }
 
-        public Double getCurrentPos() {
-            return currentPos.get();
-        }
-
-        public final void setValue(Double value) {
-            this.currentPos.set(value);
-        }
 
         public void play(File file) {
 
             if (isPaused && file == currentFile) {
-                listenForFileEnd(clip);
+//                listenForFileEnd(clip);
                 isPlaying = true;
                 isPaused = false;
                 clip.start();
-                waitForSoundEnd();
+//                waitForSoundEnd();
             } else {
                 if (isPaused && file != currentFile) {
                     currentFile = file;
@@ -325,12 +311,11 @@ public static void updateListener() {
                     isPlaying = true;
                     isPaused = false;
                     clip = AudioSystem.getClip();
-                    listenForAutoPlay(clip);
-                    listenForFileEnd(clip);
+//                    listenForFileEnd(clip);
                     clip.open(audioIn);
+                    listenForAutoPlay(clip);
                     clip.start();
-                    currentPos.setValue(clip.getFramePosition());
-                    waitForSoundEnd();
+//                    waitForSoundEnd();
                 } catch (Exception e) {
                     e.printStackTrace();
                     return;
@@ -338,23 +323,19 @@ public static void updateListener() {
             }
         }
 
-
-        private void flush() {
-            currentFile = null;
-            clip = null;
-            audioIn = null;
-            isPaused = false;
-            isPlaying = false;
-        }
-
+       private static void listenForAutoPlay(Clip clip) {
+           clip.addLineListener(event -> {
+               if (event.getType() == LineEvent.Type.STOP && (((clip.getMicrosecondLength() - clip.getMicrosecondPosition())/1000000) == 0)){
+                   if (currentIndex < toPlay.size()-1) {
+                       next();
+                   }
+               }
+           });
+       }
         private void pause() {
             isPaused = true;
             isPlaying = false;
             clip.stop();
-        }
-
-        private void breakOut() {
-            instance = new corePlayer();
         }
 
         private void resume() {
@@ -363,91 +344,55 @@ public static void updateListener() {
             clip.start();
         }
 
-        private void listenForFileEnd(Clip clip) {
-            clip.addLineListener(event -> {
-                if (event.getType() == LineEvent.Type.STOP){
-                    waitOnBarrier();
-                }
-            });
-        }
+//        private void listenForFileEnd(Clip clip) {
+//            clip.addLineListener(event -> {
+//                if (event.getType() == LineEvent.Type.STOP){
+//                    waitOnBarrier();
+//                }
+//            });
+//        }
 
-        private void waitOnBarrier() {
-            try {
-                barrier.await();
-            }catch (InterruptedException | BrokenBarrierException e) {
-//                throw new RuntimeException(e);
-//                System.out.println("heads up - broke the barrier");
-            }
-        }
-
-        private void waitForSoundEnd() {
-            waitOnBarrier();
-        }
-
-
-        int audiolength, audioposition;
-
-        private void initiateProgressTracking() {
-
-        }
-//        private void tick() {
-//            if (clip.isActive() && isPlaying) {
-//                audioposition = (int)(clip.getMicrosecondPosition());
-//                updateSlider();
-//            } else {
-//                return;
+//        private void waitOnBarrier() {
+//            try {
+//                barrier.await();
+//            }catch (InterruptedException | BrokenBarrierException e) {
+////                throw new RuntimeException(e);
+////                System.out.println("heads up - broke the barrier");
 //            }
 //        }
-//
-//        public void skip(int position) {
-//            if (position < 0 || position > clip.getMicrosecondLength())
-//                return;
-//            clip.setMicrosecondPosition(position * 1000);
-////            progress.setValue(position);
-//            updateSlider();
-//
 
+//        private void waitForSoundEnd() {
+//            waitOnBarrier();
+//        }
 
         //==slider update functions
-
-        private final ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
-        private final DoubleProperty currentPos = new SimpleDoubleProperty(0);
-
-        private void checkTrackProgress() {
-            final Runnable checkProgress = new Runnable() {
-                @Override
-                public void run() {
-                    double value =(clip.getFramePosition() / clip.getFrameLength())*100;
-                    System.out.println(value);
-                    currentPos.setValue((clip.getFramePosition() / clip.getFrameLength())*100);
-                    System.out.println("chcekr seems to be running");
-                }
-            };
-            final ScheduledFuture<?> handleProgress = service.scheduleAtFixedRate(checkProgress, 1, 1, SECONDS);
-        }
 
         private double getPosition() {
             return clip.getMicrosecondPosition();
         }
+
         private double getRelativePosition() {
             double length = clip.getMicrosecondLength();
             double position = clip.getMicrosecondPosition();
-
             double relativePos =(((double)position *100/ (double)length));
-
             return relativePos;
         }
-    }
-
-    public interface MyChangeListener {
-        public void onChangeHappened();
-    }
-
-    public double getClipPosition() {
-        return player.getPosition();
-    }
-
-    public double getRelativePosition() {
-        return player.getRelativePosition();
+        public void changeTrackPosition(int relativePosition) {
+            System.out.println("change called at relative pos: " + relativePosition);
+            System.out.println("total: " + clip.getFrameLength());
+            double newFramePosition = ((double)relativePosition/100) * (double)clip.getFrameLength();
+            System.out.println("new frame position: " + newFramePosition);
+            if (clip == null) {
+                return;
+            } else {
+                if (clip.isActive()) {
+                    clip.stop();
+                    clip.setFramePosition((int)newFramePosition);
+                    clip.start();
+                } else if (!clip.isActive()) {
+                    clip.setFramePosition(relativePosition);
+                }
+            }
+        }
     }
 }

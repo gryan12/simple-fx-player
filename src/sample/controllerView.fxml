@@ -28,7 +28,7 @@
     <VBox prefHeight="62.0" prefWidth="600.0" styleClass="controlls" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" BorderPane.alignment="CENTER">
         <children>
             <HBox fx:id="trackLabelBox" alignment="CENTER" styleClass="centerLabel">
-                <Label fx:id="currentTrackLabel" alignment="CENTER" text="labels suck" />
+                <Label fx:id="currentTrackLabel" alignment="CENTER" text="" />
 
             </HBox>
             <HBox fx:id="controllBox" alignment="CENTER" prefHeight="45.0" prefWidth="461.0">
@@ -42,9 +42,9 @@
             </HBox>
             <HBox fx:id="sliderBox" alignment="CENTER" prefHeight="100.0" prefWidth="500.0">
                 <children>
-                    <Label fx:id="currentTime" text="ct"/>
+                    <Label fx:id="currentTime" text=""/>
                     <Slider fx:id="slider" prefWidth="500" max="100" min="0" value="0"/>
-                    <Label fx:id="endTime" text="et"/>
+                    <Label fx:id="endTime" text=""/>
                 </children>
             </HBox>
         </children>

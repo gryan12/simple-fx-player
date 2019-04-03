@@ -123,5 +123,9 @@ public class Duration implements Serializable {
         return (int)totalLength;
     }
 
+    public static String format(int seconds) {
+        Duration duration = new Duration(seconds);
+        return duration.toString();
+    }
 
 }

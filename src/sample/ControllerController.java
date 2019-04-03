@@ -4,6 +4,8 @@ import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
@@ -20,6 +22,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import sample.trackClasses.Album;
+import sample.trackClasses.Duration;
 import sample.trackClasses.Track;
 
 import javax.imageio.ImageIO;
@@ -85,6 +88,11 @@ public class ControllerController implements AutoPlayer.MyChangeListener {
     private  ScheduledFuture<?> lastFuture = null;
 
 
+    public void initialize() {
+        setUpSliderListener();
+    }
+
+
     public void setCurrentTime(String text) {
         this.currentTime.setText(text);
     }
@@ -114,7 +122,10 @@ public class ControllerController implements AutoPlayer.MyChangeListener {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        currentTime.setText("" + AutoPlayer.getInstance().getClip().getMicrosecondPosition()/1000000);
+                        int value  = (int)(AutoPlayer.getInstance().getClip().getMicrosecondPosition()/1000000);
+                        String current = Duration.format(value);
+                        currentTime.setText(current);
+//                        currentTime.setText("" + AutoPlayer.getInstance().getClip().getMicrosecondPosition()/1000000);
                     }
                 });
             }
@@ -127,12 +138,14 @@ public class ControllerController implements AutoPlayer.MyChangeListener {
 
     }
 
-//look this more deatil pls
+    //when new task generated in the player class, update controller fields.
     @Override
     public void onChangeHappened() {
         Track track = AutoPlayer.getInstance().getToPlay().get(AutoPlayer.getInstance().getCurrentIndex());
 
-
+        if (currentTrack == player.getToPlay().get(player.getCurrentIndex())) {
+            return;
+        }
        if ((currentTrack != null && track != currentTrack) || currentTrack == null){
            currentTrack = track;
             loadCurrentAlbumArtwork(track.getAlbum());
@@ -142,12 +155,8 @@ public class ControllerController implements AutoPlayer.MyChangeListener {
             refreshLabels(track);
             resetSlider = true;
             checkTrackProgress();
-            System.out.println("at end of onchangehappened");
         } else if (currentTrack != null && track == currentTrack) {
-           System.out.println("nothing to change. I think");
        }
-
-        System.out.println("change called");
     }
 
 
@@ -169,8 +178,6 @@ public class ControllerController implements AutoPlayer.MyChangeListener {
 //        final ScheduledFuture<?> handleProgress = service.scheduleAtFixedRate(checkProgress, 1, 1, SECONDS);
 //    }
 
-    public void initialize() {
-    }
     @FXML
     public void handlePlayerControlls(ActionEvent ae) {
         if (ae.getSource() == play) {
@@ -190,8 +197,6 @@ public class ControllerController implements AutoPlayer.MyChangeListener {
 
 
 
-    //PLACEHOLDER ======== NEED FUNCTION IN AUTOPLAYER WHICH INFORMS CONTROLLER OF CURRENT TRACK, RATHER THAN
-    //IS IMPLEMENTED IN THIS MEHTOD
     public void loadCurrentAlbumArtwork(Album album) {
 
         if (album.getAlbumArtwork() == null) {
@@ -223,16 +228,28 @@ public class ControllerController implements AutoPlayer.MyChangeListener {
        }
     }
 
-    public void setUpSlider() {
-        slider.setMin(0);
-        slider.setMax(player.getClip().getFrameLength());
-        player.bindSliderToPosition(slider);
-        System.out.println("slider called");
+    /*
+    onlu update the slider if incremented by a value greater than 3 (to not act upon tracking change) and less than 98
+    (to not act upon auto-play changes).
+     */
+    public void setUpSliderListener() {
+        System.out.println("slider setup called");
+        slider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                if (Math.abs((double)oldValue - (double)newValue) > 3 && (Math.abs(oldValue.doubleValue() - newValue.doubleValue()) < 98)) {
+                    System.out.println("User Slider Change Detected");
+                    AutoPlayer.getInstance().changeTrackPosition((newValue.intValue()));
+                }
+            }
+        });
     }
 
-
-
-    public void checkAndUpdateSlider() {
-
+    public void setUpSliderEvents() {
+        slider.setOnMouseReleased(event -> {
+            System.out.println("user attempt tp change slider detected");
+            AutoPlayer.getInstance().changeTrackPosition((int)(slider.getValue()));
+        });
     }
+
 }
