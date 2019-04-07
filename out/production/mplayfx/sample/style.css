@@ -1,0 +1,142 @@
+.root {
+    -fx-font-size: 14px;
+    -fx-font-family: "Tahoma";
+    -fx-background-color: #333333;
+}
+
+
+
+.button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-pref-width: 100px;
+
+
+
+
+}
+.button:hover,
+.button:focus {
+/*
+   -fx-background-color: black;
+*/
+   -fx-scale-x:1.1;
+   -fx-scale-y:1.1;
+}
+
+.button:active {
+    -fx-font-weight:bold;
+}
+
+
+
+
+/*
+=========Top
+*/
+
+
+
+
+.menu-bar {
+    -fx-border-width: 0 0 1 0;
+    -fx-background-color: #333333;
+    -fx-border-color:white;
+}
+
+.menu-item {
+    -fx-text-fill: white;
+}
+.menu-bar .label {
+    -fx-font-size: 14pt;
+    -fx-font-family: "Tahoma";
+    -fx-text-fill: white;
+    -fx-opacity: 0.9;
+}
+
+
+.tool-bar {
+    -fx-background-color: #333333;
+}
+
+
+/*
+=========Center
+*/
+
+.centerView Label {
+       -fx-font-size: 14pt;
+       -fx-font-family: "Tahoma";
+       -fx-text-fill: white;
+       -fx-opacity: 0.9;
+       -fx-text-alignment: center;
+
+}
+
+.list-cell: filled:selected:focused, .list-cell:filled:selected {
+    -fx-background-color: linear-gradient(#328BDB 0%, #207BCF 25%, #1973C9 75%, #0A65BF 100%);
+}
+
+.list-cell:odd {
+  -fx-background-color: white;
+}
+
+.list-cell:filled:hover {
+ -fx-background-color: #1a66ff;
+  -fx-text-fill: white;
+}
+
+.centerLabel Label {
+    -fx-text-fill: white;
+    -fx-font-size: 14pt;
+}
+
+
+/*
+=========Left
+*/
+.leftPane Label {
+    -fx-text-fill: white;
+    -fx-font-size: 12pt;
+    -fx-font-weight:bold;
+    -fx-underline:true;
+}
+
+.leftPane Button {
+    -fx-pref-width: 200px;
+}
+
+
+
+
+/*
+=========Right
+*/
+
+#rightDetailsArea {
+    -fx-control-inner-background: #333333;
+    -fx-text-box-border: transparent;
+}
+
+
+/*
+=========Bottom
+*/
+
+.controlls Button {
+    -fx-background-color: black;
+    -fx-text-fill: white;
+    -fx-font-size:17px;
+}
+
+.controlls Label {
+    -fx-font-size: 16px;
+
+}
+
+.controlPane Label {
+    -fx-text-fill: white;
+    -fx-font-size:12px;
+}
+
+
