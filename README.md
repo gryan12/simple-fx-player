@@ -17,4 +17,9 @@ The aim of the project was to make a music player for .wav files, with three arb
   The above aims do not result in optimal code (quite the opposite), as the project was intended as a learning exercise. 
   
   
+  
+  The location of imported music files is stored, and then read from when the call to play a track is called. In the current state,       changing of the filepath of a music track will result in it needing to be reimported. 
+  
+  
+  
       
