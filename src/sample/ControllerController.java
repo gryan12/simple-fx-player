@@ -113,7 +113,6 @@ public class ControllerController implements AutoPlayer.MyChangeListener {
 
     private void checkTrackProgress() {
         resetSlider = false;
-        System.out.println("checking prog");
         final Runnable checkProgress = new Runnable() {
             @Override
             public void run() {
@@ -233,12 +232,10 @@ public class ControllerController implements AutoPlayer.MyChangeListener {
     (to not act upon auto-play changes).
      */
     public void setUpSliderListener() {
-        System.out.println("slider setup called");
         slider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 if (Math.abs((double)oldValue - (double)newValue) > 3 && (Math.abs(oldValue.doubleValue() - newValue.doubleValue()) < 98)) {
-                    System.out.println("User Slider Change Detected");
                     AutoPlayer.getInstance().changeTrackPosition((newValue.intValue()));
                 }
             }
@@ -247,7 +244,6 @@ public class ControllerController implements AutoPlayer.MyChangeListener {
 
     public void setUpSliderEvents() {
         slider.setOnMouseReleased(event -> {
-            System.out.println("user attempt tp change slider detected");
             AutoPlayer.getInstance().changeTrackPosition((int)(slider.getValue()));
         });
     }
