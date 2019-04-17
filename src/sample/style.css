@@ -4,15 +4,10 @@
     -fx-background-color: #333333;
 }
 
-
-
 .button {
     -fx-background-color: transparent;
     -fx-text-fill: white;
     -fx-pref-width: 100px;
-
-
-
 
 }
 .button:hover,
@@ -45,7 +40,7 @@
 }
 
 .menu-item {
-    -fx-text-fill: white;
+    -fx-text-fill: black;
 }
 .menu-bar .label {
     -fx-font-size: 14pt;
@@ -53,8 +48,12 @@
     -fx-text-fill: white;
     -fx-opacity: 0.9;
 }
-
-
+#menuBar .context-menu {
+    -fx-background-color: #333333;
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 0 6 6 6, 0 5 5 5, 0 4 4 4;
+    -fx-padding: 0.333333em 0.083333em 0.666667em 0.083333em;
+}
 .tool-bar {
     -fx-background-color: #333333;
 }

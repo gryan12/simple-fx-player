@@ -23,8 +23,8 @@ import java.util.Set;
 //as playlists will be played by reference to the paths the files are in(i.e. there is only ever one copy of any
 //given track).
 
-//the currentTrackList is used for displaying total traks in the list view, instrad of the overall track list,
-//hjust to help maintain integrity of the main tracklist during sessions
+//the currentTrackList is used for displaying total tracks in the list view, instead of the overall track list,
+//just to help maintain integrity of the main tracklist during sessions while still writing the program
 public class DataStore {
     private Path musicStorage = FileSystems.getDefault().getPath("trackStorage.txt");
     private ObservableList<Playlist> playlistList = FXCollections.observableArrayList();
@@ -38,18 +38,9 @@ public class DataStore {
 
     }
 
-
-
-    //    static {
-//        File pathos = new File("plac-yunosuke-pathos-pathos.wav");
-//        Track pathTrack = new Track("pathos", new Duration(366), pathos);
-//        ArrayList<Track> tempList = new ArrayList<>();
-//        tempList.add(pathTrack);
-//        File gimme = new File("plac-yunosuke-pathos-gimmeyoutlove.wav");
-//        Track gimmeTrack = new Track("gimme", new Duration(477), gimme);
-//        tempList.add(gimmeTrack);
-//        trackList.setAll(tempList);
-//    }
+    public static DataStore getInstance() {
+        return instance;
+    }
 
     public void setCurrentTracks(List<Track> trackList) {
        currentTrackList = FXCollections.observableArrayList(trackList);
@@ -57,10 +48,6 @@ public class DataStore {
 
 
 
-
-    public static DataStore getInstance() {
-       return instance;
-    }
 
     public void addTrack(Track track) {
         trackList.add(track);
@@ -74,10 +61,6 @@ public class DataStore {
         currentTrackList = FXCollections.observableArrayList(list);
     }
 
-
-//    public void remakeCurrent(List<Track> list) {
-//        currentTrackList = FXCollections.observableArrayList(list);
-//    }
 
 
     public  ObservableList<Track> getTracks() {
@@ -185,19 +168,6 @@ public class DataStore {
    }
 
     public static void main(String[] args) {
-        Album newAbum = new Album("Pathos", "Yunosuke");
-            File pathos = new File("plac-yunosuke-pathos-pathos.wav");
-           Track pathTrack = new Track("pathos", new Duration(366), pathos);
-           File gimme = new File("plac-yunosuke-pathos-gimmeyourlove.wav");
-           Track gimmeTrack = new Track("gimme", new Duration(477), gimme);
-            instance.addTrack(gimmeTrack);
-            instance.addTrack(pathTrack);
-           newAbum.addToAlbum(gimmeTrack);
-           newAbum.addToAlbum(pathTrack);
-           instance.addAlbum(newAbum);
-
-           instance.storeData();
-
 
     }
 

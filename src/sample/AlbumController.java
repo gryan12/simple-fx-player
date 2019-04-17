@@ -45,65 +45,41 @@ public class AlbumController {
     private Scene trackScene;
     private AutoPlayer player = AutoPlayer.getInstance();
     private TrackController trackController;
-
-    FileManager manager;
-
-
-    @FXML
-    ListView<Album> albumListView;
-
-    @FXML
-    BorderPane mainPane;
-
-
-    @FXML
-    TextArea rightDetailsArea;
-
-    @FXML
-    Button play;
-
-    @FXML
-    Button pause;
-
-    @FXML
-    Button next;
-
-    @FXML
-    Button prev;
-
-    @FXML
-    Label albumViewLabel;
-
-    @FXML
-    ContextMenu albumListContextMenu;
-
-    @FXML
-    ImageView imageID;
-//    @FXML
-//    ImageView artworkImageView;
-    @FXML
-    AnchorPane imagePane;
-
-    @FXML
-    Label currentTrackLabel;
-
+    private FileManager manager;
     private Parent controllerRoot;
 
-public void initialize() {
+    @FXML
+    private ListView<Album> albumListView;
+    @FXML
+    private BorderPane mainPane;
+    @FXML
+    private TextArea rightDetailsArea;
+    @FXML
+    private Button play;
+    @FXML
+    private Button pause;
+    @FXML
+    private Button next;
+    @FXML
+    private Button prev;
+    @FXML
+    private Label albumViewLabel;
+    @FXML
+    private ContextMenu albumListContextMenu;
+    @FXML
+    private ImageView imageID;
+    @FXML
+    private AnchorPane imagePane;
+    @FXML
+    private Label currentTrackLabel;
+
+
+    public void initialize() {
 
     }
 
-    public void loadControlls(Parent root) {
-       mainPane.setBottom(root);
-    }
-
-
-    public Parent getControllerRoot() {
-        return controllerRoot;
-    }
-
-    public void setControllerRoot(Parent controllerRoot) {
-        this.controllerRoot = controllerRoot;
+    public AlbumController() {
+        manager = new FileManager();
     }
 
     public void loadPlayerControlls() {
@@ -111,8 +87,29 @@ public void initialize() {
         mainPane.setBottom(root);
     }
 
-    public AlbumController() {
-        manager = new FileManager();
+    public void loadControlls(Parent root) {
+       mainPane.setBottom(root);
+    }
+
+    public Parent getControllerRoot() {
+        return controllerRoot;
+    }
+
+    public AutoPlayer getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(AutoPlayer player) {
+        this.player = player;
+
+    }
+    public void setControllerRoot(Parent controllerRoot) {
+        this.controllerRoot = controllerRoot;
+    }
+
+
+    public void setCurrentTrackLabel(Track track) {
+        this.currentTrackLabel.setText(track.getTitle());
     }
 
     public void setTrackController(TrackController trackController) {
@@ -133,7 +130,6 @@ public void initialize() {
     //track view with all loaded tracks
     @FXML
     public void goToAllTracks() {
-        System.out.println("all tracks called");
         DataStore.getInstance().setCurrent(DataStore.getInstance().getTracks());
         trackController.setViewTracks(DataStore.getInstance().getCurrentTracks());
         trackController.setViewLabel("All Loaded Tracks");
@@ -203,7 +199,6 @@ public void initialize() {
 
         albumListContextMenu.getItems().addAll(albumMenuItem, editMenuItem);
 
-//        albumListView.setItems(DataStore.getInstance().getAlbums());
         albumListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Album>() {
             @Override
             public void changed(ObservableValue<? extends Album> observable, Album oldValue, Album newValue) {
@@ -288,9 +283,6 @@ public void initialize() {
         }
     }
 
-    public AutoPlayer getPlayer() {
-        return player;
-    }
 
 //    public void loadAlbumArtwork(Album album) {
 //        System.out.println("this is being passed: " + album.getAlbumArtwork().getName());
@@ -347,16 +339,5 @@ public void initialize() {
         albumListView.refresh();
 
 //        albumListView = new ListView<>(DataStore.getInstance().getAlbums());
-    }
-
-
-
-
-    public void setPlayer(AutoPlayer player) {
-        this.player = player;
-    }
-
-    public void setCurrentTrackLabel(Track track) {
-        this.currentTrackLabel.setText(track.getTitle());
     }
 }

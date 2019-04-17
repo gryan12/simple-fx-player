@@ -378,10 +378,7 @@ public class AutoPlayer  {
             return relativePos;
         }
         public void changeTrackPosition(int relativePosition) {
-            System.out.println("change called at relative pos: " + relativePosition);
-            System.out.println("total: " + clip.getFrameLength());
             double newFramePosition = ((double)relativePosition/100) * (double)clip.getFrameLength();
-            System.out.println("new frame position: " + newFramePosition);
             if (clip == null) {
                 return;
             } else {
