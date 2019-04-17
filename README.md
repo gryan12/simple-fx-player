@@ -19,8 +19,11 @@ The aim of the project was to make a music player for .wav files, with three arb
   
   
   To be implemented: 
+  
       Custom playlists. 
+      
       Expansion of the menu/toolbars. 
+      
       Improvements to how data is saved between sessions.
   
   
