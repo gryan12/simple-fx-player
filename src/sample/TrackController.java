@@ -54,9 +54,9 @@ public class TrackController {
     private AutoPlayer player = AutoPlayer.getInstance();
     private AlbumController albumController;
     private Scene albumScene;
+    private FileManager manager;
     @FXML
     private ObservableList<Track> currentTrackList = FXCollections.observableArrayList();
-
     @FXML
     private BorderPane mainPane;
     @FXML
@@ -92,10 +92,13 @@ public class TrackController {
     @FXML
     private Slider slider;
     @FXML
-
     private Parent controllerRoot;
 
-    private FileManager manager;
+
+
+    @FXML
+    public void initialize() {
+    }
 
 
     public TrackController() {
@@ -103,6 +106,9 @@ public class TrackController {
         this.manager = new FileManager();
     }
 
+
+
+    //setters, getters, loading funcs
 
     public void setControllerRoot(Parent controllerRoot) {
         this.controllerRoot = controllerRoot;
@@ -120,20 +126,9 @@ public class TrackController {
     }
 
 
-    @FXML
-    public void initialize() {
-
-//        try {
-////            FXMLLoader loader = new FXMLLoader(getClass().getResource("controllerView.fxml"));
-////            controllerRoot = loader.load();
-//            mainPane.setBottom(controllerRoot);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+    public void setViewTracks(List<Track> trackList) {
+        trackListView.getItems().setAll(trackList);
     }
-
-
-
 
     public AutoPlayer getPlayer() {
         return player;
@@ -143,12 +138,15 @@ public class TrackController {
         return albumScene;
     }
 
+    public void setAlbumScene(Scene scene) {
+        albumScene = scene;
+    }
 
+    public void setViewLabel(String text) {
+        this.viewLabel.setText(text);
+    }
     //====functions to change the view of tracks====
 
-    public void setViewTracks(List<Track> trackList) {
-        trackListView.getItems().setAll(trackList);
-    }
 
 
     @FXML
@@ -251,9 +249,7 @@ public class TrackController {
 
 
 
-    public void setAlbumScene(Scene scene) {
-        albumScene = scene;
-    }
+
     //use this genreal style to chang ethe infroamtio in the center of the screen based on which song is playing
     @FXML
     public void handleClickListView() {
@@ -294,9 +290,6 @@ public class TrackController {
         }
     }
 
-
-
-
     @FXML
     public void loadAlbum() {
         DirectoryChooser chooser = new DirectoryChooser();
@@ -314,16 +307,15 @@ public class TrackController {
     }
 
 
-
         //funfctions to handle music player controls =============== many unused need to cleanup
     //the player seems to work fine even though it shouldnt - for some reason the designated track plays even
     //when an index is not surplied.
-    @FXML
-    public void testPlay() {
-        player.populateList(trackListView.getItems());
-        System.out.println(player.getCurrentIndex());
-        player.play();
-    }
+//    @FXML
+//    public void testPlay() {
+//        player.populateList(trackListView.getItems());
+//        System.out.println(player.getCurrentIndex());
+//        player.play();
+//    }
 
 
     //PLACEHOLDER ======== NEED FUNCTION IN AUTOPLAYER WHICH INFORMS CONTROLLER OF CURRENT TRACK, RATHER THAN
@@ -343,32 +335,6 @@ public class TrackController {
         player.newPlay();
 
     }
-
-    //again change label to auto updating, placeholder currently
-//    @FXML
-//    public void handlePlayerControlls(ActionEvent ae) {
-//        if (ae.getSource() == play) {
-//            if (!player.shouldResume()) {
-//                contextPlay();
-//            } else {
-//                player.resume();
-//                setcurrentTrackLabel(player.getToPlay().get(player.getCurrentIndex()));
-//            }
-//        } else if (ae.getSource() == pause) {
-//            System.out.println("THIS IS IN THE TRACK CONTROLLER 4HOUSE");
-//            System.out.println("pause");
-//            player.pause();
-//        } else if (ae.getSource() == next) {
-//            System.out.println("next");
-//            player.next();
-//            setcurrentTrackLabel(player.getToPlay().get(player.getCurrentIndex()+1));
-//        } else if (ae.getSource() == prev) {
-//            System.out.println("prev");
-//            player.prev();
-//            setcurrentTrackLabel(player.getToPlay().get(player.getCurrentIndex()-1));
-//        }
-//    }
-
 
     public void handleTestPlay() {
 
@@ -392,15 +358,6 @@ public class TrackController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @FXML
-    public void sliderListener() {
-
-    }
-
-    public void setViewLabel(String text) {
-       this.viewLabel.setText(text);
     }
 
 

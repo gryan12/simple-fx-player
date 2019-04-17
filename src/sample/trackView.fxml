@@ -67,13 +67,13 @@
    <top>
       <VBox prefHeight="65.0" prefWidth="846.0" styleClass="header-region" BorderPane.alignment="CENTER">
          <children>
-            <MenuBar>
+            <MenuBar styleClass="menuBar">
               <menus>
-                <Menu mnemonicParsing="false" text="File">
+                <Menu mnemonicParsing="false" text="File" fx:id="menuBar">
                   <items>
-                        <MenuItem mnemonicParsing="false" text="Load Track" />
+                        <MenuItem mnemonicParsing="false" text="Load Track" onAction="#loadSingleTrack"/>
                         <SeparatorMenuItem mnemonicParsing="false" />
-                    <MenuItem mnemonicParsing="false" text="Load Album" />
+                    <MenuItem mnemonicParsing="false" text="Load Album" onAction="#loadAlbum" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" text="Create Playlist" />
                   </items>
